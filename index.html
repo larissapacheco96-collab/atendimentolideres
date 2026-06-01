@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OBDC — Gestão de Atendimentos Liderança</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f5f5f0;color:#1a1a1a}
+.wrap{padding:1.5rem 1.25rem;max-width:1200px;margin:0 auto}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid #ddd;flex-wrap:wrap;gap:12px}
+.logo-sub{font-size:10px;color:#007e6a;letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+.title-area{text-align:right}
+.title-area h1{font-size:16px;font-weight:500;color:#1a1a1a}
+.toolbar{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center}
+.toolbar input[type=text]{flex:1;min-width:180px;font-size:13px;padding:7px 10px;border:1px solid #ccc;border-radius:8px;background:#fff;color:#1a1a1a}
+.btn-add{background:#007e6a;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.btn-add:hover{background:#005f50}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:1.25rem}
+.stat{background:#fff;border-radius:8px;padding:.75rem 1rem;border:1px solid #e8e8e4}
+.stat-label{font-size:11px;color:#666;margin-bottom:4px}
+.stat-val{font-size:22px;font-weight:500;color:#1a1a1a}
+.stat-val.urg{color:#a32d2d}
+.table-wrap{overflow-x:auto;border:1px solid #ddd;border-radius:12px;background:#fff}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:860px}
+thead th{background:#f8f8f5;padding:10px;text-align:left;font-weight:500;font-size:11px;color:#666;border-bottom:1px solid #ddd;white-space:nowrap}
+tbody tr{border-bottom:1px solid #f0f0ec;transition:background .15s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#fafafa}
+td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-size:12px}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap}
+.b-alta{background:#fcebeb;color:#a32d2d}
+.b-media{background:#faeeda;color:#854f0b}
+.b-baixa{background:#eaf3de;color:#3b6d11}
+.b-encerrado{background:#e1f5ee;color:#0f6e56}
+.b-andamento{background:#e6f1fb;color:#185fa5}
+.b-pendente{background:#f1efe8;color:#5f5e5a}
+.avatar{width:28px;height:28px;border-radius:50%;background:#e6f1fb;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#185fa5;flex-shrink:0}
+.btn-icon{background:none;border:none;cursor:pointer;color:#888;font-size:16px;padding:3px 5px;border-radius:4px}
+.btn-icon:hover{color:#a32d2d;background:#fcebeb}
+.btn-edit:hover{color:#185fa5;background:#e6f1fb}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:12px;border:1px solid #ddd;padding:1.5rem;width:min(600px,96vw);max-height:90vh;overflow-y:auto}
+.modal h2{font-size:16px;font-weight:500;margin-bottom:1.25rem}
+.form-row{margin-bottom:1rem}
+.form-row label{display:block;font-size:12px;color:#555;margin-bottom:4px;font-weight:500}
+.form-row input,.form-row textarea,.form-row select{width:100%;font-size:13px;padding:8px 10px;border:1px solid #ccc;border-radius:8px;background:#fff;color:#1a1a1a;font-family:Arial,sans-serif}
+.form-row textarea{resize:vertical;min-height:68px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem;padding-top:1rem;border-top:1px solid #eee}
+.btn-cancel{background:none;border:1px solid #ccc;color:#333;border-radius:8px;padding:7px 16px;font-size:13px;cursor:pointer}
+.btn-cancel:hover{background:#f5f5f0}
+.btn-save{background:#007e6a;color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:500;cursor:pointer}
+.btn-save:hover{background:#005f50}
+.empty{text-align:center;padding:2.5rem;color:#888;font-size:13px}
+.sync-badge{font-size:11px;color:#888;display:flex;align-items:center;gap:5px;margin-left:auto}
+.dot-live{width:7px;height:7px;border-radius:50%;background:#1d9e75;display:inline-block;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div>
+      <div style="display:flex;align-items:baseline;gap:1px">
+        <span style="font-size:28px;font-weight:700;letter-spacing:2px;color:#007e6a;line-height:1">OBDC</span><span style="font-size:24px;color:#d4531e;font-weight:700;line-height:1">.</span>
+      </div>
+      <span class="logo-sub">Você. Satisfeito</span>
+    </div>
+    <div class="title-area">
+      <h1>Gestão de Atendimentos — Liderança</h1>
+      <p id="datetime-display" style="font-size:11px;color:#888;margin-top:3px"></p>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Total</div><div class="stat-val" id="s-total">0</div></div>
+    <div class="stat"><div class="stat-label">Pendentes</div><div class="stat-val" id="s-pendente">0</div></div>
+    <div class="stat"><div class="stat-label">Em andamento</div><div class="stat-val" id="s-andamento">0</div></div>
+    <div class="stat"><div class="stat-label">Alta urgência</div><div class="stat-val urg" id="s-alta">0</div></div>
+  </div>
+
+  <div class="toolbar">
+    <input type="text" id="search-input" placeholder="Buscar por líder, demanda, orientação..." oninput="renderTable()">
+    <button class="btn-add" onclick="openModal()"><i class="ti ti-plus"></i> Novo atendimento</button>
+    <div class="sync-badge"><span class="dot-live"></span> Atualizado em tempo real</div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Líder solicitante</th>
+          <th>Demanda solicitada</th>
+          <th>Entendimento / Sugestão (base legal)</th>
+          <th>Orientação gestão</th>
+          <th>Urgência / Status</th>
+          <th>Prazo retorno gestão</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div id="empty-msg" class="empty" style="display:none">
+      <i class="ti ti-inbox" style="font-size:28px;display:block;margin-bottom:8px"></i>
+      Nenhum atendimento registrado. Clique em "Novo atendimento" para começar.
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <h2 id="modal-title">Novo atendimento</h2>
+    <div class="form-row">
+      <label>Líder solicitante</label>
+      <input type="text" id="f-lider" placeholder="Nome do líder...">
+    </div>
+    <div class="form-row">
+      <label>Demanda solicitada</label>
+      <textarea id="f-demanda" rows="2" placeholder="Descreva a demanda..."></textarea>
+    </div>
+    <div class="form-row">
+      <label>Entendimento / Sugestão — informar base legal</label>
+      <textarea id="f-sugestao" rows="3" placeholder="Ex: Conforme art. 7º da CLT..."></textarea>
+    </div>
+    <div class="form-row">
+      <label>Orientação gestão</label>
+      <textarea id="f-orientacao" rows="2" placeholder="Orientação para a liderança..."></textarea>
+    </div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Urgência</label>
+        <select id="f-urgencia">
+          <option value="Alta">Alta</option>
+          <option value="Média" selected>Média</option>
+          <option value="Baixa">Baixa</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Status</label>
+        <select id="f-status">
+          <option value="Pendente">Pendente</option>
+          <option value="Em andamento">Em andamento</option>
+          <option value="Encerrado">Encerrado</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Prazo retorno gestão</label>
+      <input type="date" id="f-prazo">
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveRecord()">Salvar atendimento</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY='obdc_atendimentos_v2';
+let records=[];
+let editingId=null;
+
+function loadData(){
+  try{ const d=localStorage.getItem(STORAGE_KEY); if(d) records=JSON.parse(d); }catch(e){}
+  renderTable();
+}
+function saveData(){
+  try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(records)); }catch(e){}
+}
+function urgClass(u){ return u==='Alta'?'b-alta':u==='Média'?'b-media':'b-baixa'; }
+function statusClass(s){ return s==='Encerrado'?'b-encerrado':s==='Em andamento'?'b-andamento':'b-pendente'; }
+function formatDate(d){ if(!d) return '—'; const [y,m,day]=d.split('-'); return `${day}/${m}/${y}`; }
+function initials(n){ if(!n) return '?'; return n.trim().split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
+
+function renderTable(){
+  const q=(document.getElementById('search-input').value||'').toLowerCase();
+  const tbody=document.getElementById('tbody');
+  const filtered=records.filter(r=>!q||(r.lider+r.demanda+r.sugestao+r.orientacao).toLowerCase().includes(q));
+  if(!filtered.length){
+    tbody.innerHTML='';
+    document.getElementById('empty-msg').style.display='block';
+  } else {
+    document.getElementById('empty-msg').style.display='none';
+    tbody.innerHTML=filtered.map((r,i)=>`
+      <tr>
+        <td style="color:#999;font-size:11px">${i+1}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:7px">
+            <div class="avatar">${initials(r.lider)}</div>
+            <span style="font-weight:500">${r.lider||'—'}</span>
+          </div>
+        </td>
+        <td>${r.demanda||'—'}</td>
+        <td>${r.sugestao||'—'}</td>
+        <td>${r.orientacao||'—'}</td>
+        <td>
+          <span class="badge ${urgClass(r.urgencia)}">${r.urgencia}</span>
+          <div style="margin-top:4px"><span class="badge ${statusClass(r.status)}">${r.status}</span></div>
+        </td>
+        <td>${formatDate(r.prazo)}</td>
+        <td style="white-space:nowrap">
+          <button class="btn-icon btn-edit" onclick="editRecord('${r.id}')" title="Editar"><i class="ti ti-edit"></i></button>
+          <button class="btn-icon" onclick="deleteRecord('${r.id}')" title="Excluir"><i class="ti ti-trash"></i></button>
+        </td>
+      </tr>`).join('');
+  }
+  document.getElementById('s-total').textContent=records.length;
+  document.getElementById('s-pendente').textContent=records.filter(r=>r.status==='Pendente').length;
+  document.getElementById('s-andamento').textContent=records.filter(r=>r.status==='Em andamento').length;
+  document.getElementById('s-alta').textContent=records.filter(r=>r.urgencia==='Alta').length;
+}
+
+function openModal(id){
+  editingId=id||null;
+  if(id){
+    const r=records.find(x=>x.id===id);
+    document.getElementById('modal-title').textContent='Editar atendimento';
+    document.getElementById('f-lider').value=r.lider||'';
+    document.getElementById('f-demanda').value=r.demanda||'';
+    document.getElementById('f-sugestao').value=r.sugestao||'';
+    document.getElementById('f-orientacao').value=r.orientacao||'';
+    document.getElementById('f-urgencia').value=r.urgencia||'Média';
+    document.getElementById('f-status').value=r.status||'Pendente';
+    document.getElementById('f-prazo').value=r.prazo||'';
+  } else {
+    document.getElementById('modal-title').textContent='Novo atendimento';
+    ['f-lider','f-demanda','f-sugestao','f-orientacao'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('f-urgencia').value='Média';
+    document.getElementById('f-status').value='Pendente';
+    document.getElementById('f-prazo').value='';
+  }
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+function saveRecord(){
+  const rec={
+    id:editingId||Date.now().toString(),
+    lider:document.getElementById('f-lider').value.trim(),
+    demanda:document.getElementById('f-demanda').value.trim(),
+    sugestao:document.getElementById('f-sugestao').value.trim(),
+    orientacao:document.getElementById('f-orientacao').value.trim(),
+    urgencia:document.getElementById('f-urgencia').value,
+    status:document.getElementById('f-status').value,
+    prazo:document.getElementById('f-prazo').value,
+  };
+  if(editingId){ records=records.map(r=>r.id===editingId?rec:r); }
+  else { records.push(rec); }
+  saveData(); renderTable(); closeModal();
+}
+function deleteRecord(id){
+  if(!confirm('Excluir este atendimento?')) return;
+  records=records.filter(r=>r.id!==id);
+  saveData(); renderTable();
+}
+function editRecord(id){ openModal(id); }
+document.getElementById('modal').addEventListener('click',e=>{ if(e.target===document.getElementById('modal')) closeModal(); });
+function updateClock(){
+  const now=new Date();
+  document.getElementById('datetime-display').textContent=
+    now.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'})+
+    ' — '+now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+loadData();
+updateClock();
+setInterval(updateClock,1000);
+</script>
+</body>
+</html>
