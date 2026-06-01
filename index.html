@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OBDC — Gestão de Atendimentos Liderança</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#f5f5f0;color:#1a1a1a}
@@ -57,7 +59,10 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
 .empty{text-align:center;padding:2.5rem;color:#888;font-size:13px}
 .sync-badge{font-size:11px;color:#888;display:flex;align-items:center;gap:5px;margin-left:auto}
 .dot-live{width:7px;height:7px;border-radius:50%;background:#1d9e75;display:inline-block;animation:pulse 2s infinite}
+.dot-offline{width:7px;height:7px;border-radius:50%;background:#ccc;display:inline-block}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.toast{position:fixed;bottom:24px;right:24px;background:#1a1a1a;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
 </style>
 </head>
 <body>
@@ -85,7 +90,7 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
   <div class="toolbar">
     <input type="text" id="search-input" placeholder="Buscar por líder, demanda, orientação..." oninput="renderTable()">
     <button class="btn-add" onclick="openModal()"><i class="ti ti-plus"></i> Novo atendimento</button>
-    <div class="sync-badge"><span class="dot-live"></span> Atualizado em tempo real</div>
+    <div class="sync-badge" id="sync-badge"><span class="dot-offline" id="dot-status"></span> <span id="sync-label">Conectando...</span></div>
   </div>
 
   <div class="table-wrap">
@@ -159,33 +164,55 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
   </div>
 </div>
 
-<script>
-const STORAGE_KEY='obdc_atendimentos_v2';
-let records=[];
-let editingId=null;
+<div class="toast" id="toast"></div>
 
-function loadData(){
-  try{ const d=localStorage.getItem(STORAGE_KEY); if(d) records=JSON.parse(d); }catch(e){}
+<script>
+const firebaseConfig = {
+  databaseURL: "https://atendimentolideres-default-rtdb.firebaseio.com"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const refAtendimentos = db.ref('atendimentos');
+
+let records = {};
+let editingId = null;
+
+// Conexão em tempo real
+db.ref('.info/connected').on('value', snap => {
+  const dot = document.getElementById('dot-status');
+  const label = document.getElementById('sync-label');
+  if (snap.val()) {
+    dot.className = 'dot-live';
+    label.textContent = 'Sincronizado em tempo real';
+  } else {
+    dot.className = 'dot-offline';
+    label.textContent = 'Reconectando...';
+  }
+});
+
+// Escuta mudanças em tempo real
+refAtendimentos.on('value', snap => {
+  records = snap.val() || {};
   renderTable();
-}
-function saveData(){
-  try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(records)); }catch(e){}
-}
+});
+
 function urgClass(u){ return u==='Alta'?'b-alta':u==='Média'?'b-media':'b-baixa'; }
 function statusClass(s){ return s==='Encerrado'?'b-encerrado':s==='Em andamento'?'b-andamento':'b-pendente'; }
 function formatDate(d){ if(!d) return '—'; const [y,m,day]=d.split('-'); return `${day}/${m}/${y}`; }
 function initials(n){ if(!n) return '?'; return n.trim().split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
 
 function renderTable(){
-  const q=(document.getElementById('search-input').value||'').toLowerCase();
-  const tbody=document.getElementById('tbody');
-  const filtered=records.filter(r=>!q||(r.lider+r.demanda+r.sugestao+r.orientacao).toLowerCase().includes(q));
+  const q = (document.getElementById('search-input').value||'').toLowerCase();
+  const tbody = document.getElementById('tbody');
+  const list = Object.entries(records).map(([id,r])=>({...r,id}));
+  const filtered = list.filter(r => !q || (r.lider+r.demanda+r.sugestao+r.orientacao).toLowerCase().includes(q));
+
   if(!filtered.length){
     tbody.innerHTML='';
     document.getElementById('empty-msg').style.display='block';
   } else {
     document.getElementById('empty-msg').style.display='none';
-    tbody.innerHTML=filtered.map((r,i)=>`
+    tbody.innerHTML = filtered.map((r,i)=>`
       <tr>
         <td style="color:#999;font-size:11px">${i+1}</td>
         <td>
@@ -208,65 +235,85 @@ function renderTable(){
         </td>
       </tr>`).join('');
   }
-  document.getElementById('s-total').textContent=records.length;
-  document.getElementById('s-pendente').textContent=records.filter(r=>r.status==='Pendente').length;
-  document.getElementById('s-andamento').textContent=records.filter(r=>r.status==='Em andamento').length;
-  document.getElementById('s-alta').textContent=records.filter(r=>r.urgencia==='Alta').length;
+
+  document.getElementById('s-total').textContent = list.length;
+  document.getElementById('s-pendente').textContent = list.filter(r=>r.status==='Pendente').length;
+  document.getElementById('s-andamento').textContent = list.filter(r=>r.status==='Em andamento').length;
+  document.getElementById('s-alta').textContent = list.filter(r=>r.urgencia==='Alta').length;
 }
 
 function openModal(id){
-  editingId=id||null;
-  if(id){
-    const r=records.find(x=>x.id===id);
-    document.getElementById('modal-title').textContent='Editar atendimento';
-    document.getElementById('f-lider').value=r.lider||'';
-    document.getElementById('f-demanda').value=r.demanda||'';
-    document.getElementById('f-sugestao').value=r.sugestao||'';
-    document.getElementById('f-orientacao').value=r.orientacao||'';
-    document.getElementById('f-urgencia').value=r.urgencia||'Média';
-    document.getElementById('f-status').value=r.status||'Pendente';
-    document.getElementById('f-prazo').value=r.prazo||'';
+  editingId = id || null;
+  if(id && records[id]){
+    const r = records[id];
+    document.getElementById('modal-title').textContent = 'Editar atendimento';
+    document.getElementById('f-lider').value = r.lider||'';
+    document.getElementById('f-demanda').value = r.demanda||'';
+    document.getElementById('f-sugestao').value = r.sugestao||'';
+    document.getElementById('f-orientacao').value = r.orientacao||'';
+    document.getElementById('f-urgencia').value = r.urgencia||'Média';
+    document.getElementById('f-status').value = r.status||'Pendente';
+    document.getElementById('f-prazo').value = r.prazo||'';
   } else {
-    document.getElementById('modal-title').textContent='Novo atendimento';
+    document.getElementById('modal-title').textContent = 'Novo atendimento';
     ['f-lider','f-demanda','f-sugestao','f-orientacao'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('f-urgencia').value='Média';
-    document.getElementById('f-status').value='Pendente';
-    document.getElementById('f-prazo').value='';
+    document.getElementById('f-urgencia').value = 'Média';
+    document.getElementById('f-status').value = 'Pendente';
+    document.getElementById('f-prazo').value = '';
   }
   document.getElementById('modal').classList.add('open');
 }
+
 function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+
 function saveRecord(){
-  const rec={
-    id:editingId||Date.now().toString(),
-    lider:document.getElementById('f-lider').value.trim(),
-    demanda:document.getElementById('f-demanda').value.trim(),
-    sugestao:document.getElementById('f-sugestao').value.trim(),
-    orientacao:document.getElementById('f-orientacao').value.trim(),
-    urgencia:document.getElementById('f-urgencia').value,
-    status:document.getElementById('f-status').value,
-    prazo:document.getElementById('f-prazo').value,
+  const rec = {
+    lider: document.getElementById('f-lider').value.trim(),
+    demanda: document.getElementById('f-demanda').value.trim(),
+    sugestao: document.getElementById('f-sugestao').value.trim(),
+    orientacao: document.getElementById('f-orientacao').value.trim(),
+    urgencia: document.getElementById('f-urgencia').value,
+    status: document.getElementById('f-status').value,
+    prazo: document.getElementById('f-prazo').value,
+    updatedAt: Date.now()
   };
-  if(editingId){ records=records.map(r=>r.id===editingId?rec:r); }
-  else { records.push(rec); }
-  saveData(); renderTable(); closeModal();
+  if(editingId){
+    refAtendimentos.child(editingId).update(rec);
+    showToast('Atendimento atualizado!');
+  } else {
+    refAtendimentos.push(rec);
+    showToast('Atendimento salvo!');
+  }
+  closeModal();
 }
+
 function deleteRecord(id){
   if(!confirm('Excluir este atendimento?')) return;
-  records=records.filter(r=>r.id!==id);
-  saveData(); renderTable();
+  refAtendimentos.child(id).remove();
+  showToast('Atendimento excluído.');
 }
+
 function editRecord(id){ openModal(id); }
-document.getElementById('modal').addEventListener('click',e=>{ if(e.target===document.getElementById('modal')) closeModal(); });
-function updateClock(){
-  const now=new Date();
-  document.getElementById('datetime-display').textContent=
-    now.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'})+
-    ' — '+now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2500);
 }
-loadData();
+
+document.getElementById('modal').addEventListener('click', e=>{
+  if(e.target === document.getElementById('modal')) closeModal();
+});
+
+function updateClock(){
+  const now = new Date();
+  document.getElementById('datetime-display').textContent =
+    now.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}) +
+    ' — ' + now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
 updateClock();
-setInterval(updateClock,1000);
+setInterval(updateClock, 1000);
 </script>
 </body>
 </html>
