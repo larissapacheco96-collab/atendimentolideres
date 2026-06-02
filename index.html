@@ -25,7 +25,7 @@ body{font-family:Arial,sans-serif;background:#f5f5f0;color:#1a1a1a}
 .stat-val{font-size:22px;font-weight:500;color:#1a1a1a}
 .stat-val.urg{color:#a32d2d}
 .table-wrap{overflow-x:auto;border:1px solid #ddd;border-radius:12px;background:#fff}
-table{width:100%;border-collapse:collapse;font-size:12px;min-width:860px}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:1000px}
 thead th{background:#f8f8f5;padding:10px;text-align:left;font-weight:500;font-size:11px;color:#666;border-bottom:1px solid #ddd;white-space:nowrap}
 tbody tr{border-bottom:1px solid #f0f0ec;transition:background .15s}
 tbody tr:last-child{border-bottom:none}
@@ -291,6 +291,7 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
           <th>Entendimento Solicitante / Base Legal</th>
           <th>Orientação gestão</th>
           <th>Respondido por</th>
+          <th>Retorno gestão</th>
           <th>Urgência / Status</th>
           <th>Prazo retorno gestão</th>
           <th></th>
@@ -415,35 +416,13 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
 
 <script>
 // ===== SERVICE WORKER PARA PUSH NOTIFICATIONS =====
-const SW_CODE = `
-self.addEventListener('push', e => {
-  const data = e.data ? e.data.json() : {};
-  self.registration.showNotification(data.title || 'OBDC', {
-    body: data.body || '',
-    icon: data.icon || '',
-    badge: data.badge || '',
-    tag: data.tag || 'obdc-notif',
-    renotify: true,
-    data: { url: data.url || self.location.origin }
-  });
-});
-self.addEventListener('notificationclick', e => {
-  e.notification.close();
-  e.waitUntil(clients.matchAll({type:'window'}).then(cs => {
-    for(const c of cs){ if(c.url && 'focus' in c) return c.focus(); }
-    if(clients.openWindow) return clients.openWindow(e.notification.data.url);
-  }));
-});
-`;
-
 let swRegistration = null;
 
 async function iniciarSW(){
   if(!('serviceWorker' in navigator) || !('Notification' in window)) return;
   try {
-    const blob = new Blob([SW_CODE], {type:'application/javascript'});
-    const swUrl = URL.createObjectURL(blob);
-    swRegistration = await navigator.serviceWorker.register(swUrl, {scope:'/'});
+    swRegistration = await navigator.serviceWorker.register('./sw.js', {scope:'./'});
+    console.log('SW registrado:', swRegistration);
   } catch(e){ console.warn('SW erro:', e); }
 }
 
@@ -634,18 +613,19 @@ function renderTable(){
         <td>
           <div style="display:flex;align-items:center;gap:7px">
             <div class="avatar">${initials(r.lider)}</div>
-            <span style="font-weight:500">${r.lider||'—'}</span>
+            <span style="font-weight:500;white-space:nowrap">${r.lider||'—'}</span>
           </div>
         </td>
         <td>
-          ${r.direcionar ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#f0eafa;color:#5b21b6;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600"><i class="ti ti-user-circle" style="font-size:13px"></i>${r.direcionar}</span>` : '—'}
+          ${r.direcionar ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#f0eafa;color:#5b21b6;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap"><i class="ti ti-user-circle" style="font-size:13px"></i>${r.direcionar}</span>` : '—'}
         </td>
         <td>${r.demanda||'—'}</td>
         <td>${r.sugestao||'—'}</td>
         <td style="max-width:180px">${r.orientacao || '<span style="color:#ccc">—</span>'}</td>
         <td>
-          ${r.gestoraResp ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#f0eafa;color:#5b21b6;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600"><i class="ti ti-user-check" style="font-size:13px"></i>${r.gestoraResp}</span>` : '<span style="color:#ccc">—</span>'}
+          ${r.gestoraResp ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#f0eafa;color:#5b21b6;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap"><i class="ti ti-user-check" style="font-size:13px"></i>${r.gestoraResp}</span>` : '<span style="color:#ccc">—</span>'}
         </td>
+        <td style="font-size:12px;white-space:nowrap">${r.dataRetorno ? formatDate(r.dataRetorno) : '<span style="color:#ccc">—</span>'}</td>
         <td>
           <span class="badge ${urgClass(r.urgencia)}">${r.urgencia}</span>
           <div style="margin-top:4px"><span class="badge ${statusClass(r.status)}">${r.status}</span></div>
@@ -766,7 +746,7 @@ function renderPainel(){
       .map((r,i)=>`
       <tr>
         <td style="color:#999;font-size:11px">${i+1}</td>
-        <td><div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="width:22px;height:22px;font-size:9px">${initials(r.lider)}</div><span style="font-weight:500">${r.lider||'—'}</span></div></td>
+        <td><div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="width:22px;height:22px;font-size:9px">${initials(r.lider)}</div><span style="font-weight:500;white-space:nowrap">${r.lider||'—'}</span></div></td>
         <td style="max-width:160px">${r.demanda||'—'}</td>
         <td>${r.gestoraResp?`<span style="background:#f0eafa;color:#5b21b6;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600">${r.gestoraResp}</span>`:'—'}</td>
         <td><span class="badge ${urgClass(r.urgencia)}">${r.urgencia||'—'}</span></td>
