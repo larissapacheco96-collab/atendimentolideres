@@ -30,6 +30,8 @@ thead th{background:#f8f8f5;padding:10px;text-align:left;font-weight:500;font-si
 tbody tr{border-bottom:1px solid #f0f0ec;transition:background .15s}
 tbody tr:last-child{border-bottom:none}
 tbody tr:hover{background:#fafafa}
+tbody tr.novo-highlight{animation:highlightRow 3s ease forwards}
+@keyframes highlightRow{0%{background:#fffbe6}80%{background:#fffbe6}100%{background:transparent}}
 td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-size:12px}
 .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap}
 .b-alta{background:#fcebeb;color:#a32d2d}
@@ -61,8 +63,50 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
 .dot-live{width:7px;height:7px;border-radius:50%;background:#1d9e75;display:inline-block;animation:pulse 2s infinite}
 .dot-offline{width:7px;height:7px;border-radius:50%;background:#ccc;display:inline-block}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Toast padrão */
 .toast{position:fixed;bottom:24px;right:24px;background:#1a1a1a;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
 .toast.show{opacity:1}
+
+/* Notificação de novo atendimento */
+.notif-banner{
+  position:fixed;top:20px;right:20px;z-index:9999;
+  background:#fff;border:1.5px solid #007e6a;border-radius:12px;
+  box-shadow:0 4px 24px rgba(0,0,0,.13);
+  padding:14px 18px 14px 16px;
+  width:320px;
+  display:flex;gap:12px;align-items:flex-start;
+  transform:translateX(360px);
+  transition:transform .4s cubic-bezier(.22,1,.36,1);
+}
+.notif-banner.show{transform:translateX(0)}
+.notif-icon{width:36px;height:36px;border-radius:50%;background:#e6f5f0;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;color:#007e6a}
+.notif-body{flex:1}
+.notif-title{font-size:13px;font-weight:700;color:#007e6a;margin-bottom:3px;display:flex;align-items:center;gap:6px}
+.notif-title .badge-new{background:#007e6a;color:#fff;font-size:10px;padding:1px 7px;border-radius:20px;font-weight:600}
+.notif-text{font-size:12px;color:#333;line-height:1.5}
+.notif-close{background:none;border:none;cursor:pointer;color:#aaa;font-size:18px;padding:0;line-height:1;flex-shrink:0}
+.notif-close:hover{color:#333}
+.notif-time{font-size:10px;color:#aaa;margin-top:5px}
+
+/* Badge contador no título */
+.badge-count{display:inline-flex;align-items:center;justify-content:center;background:#d4531e;color:#fff;font-size:10px;font-weight:700;border-radius:50%;width:18px;height:18px;margin-left:6px;vertical-align:middle;animation:popIn .3s ease}
+@keyframes popIn{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+
+/* Notificação resposta da gestão */
+.notif-resp{
+  position:fixed;top:20px;left:20px;z-index:9999;
+  background:#fff;border:1.5px solid #185fa5;border-radius:12px;
+  box-shadow:0 4px 24px rgba(0,0,0,.13);
+  padding:14px 18px 14px 16px;width:320px;
+  display:flex;gap:12px;align-items:flex-start;
+  transform:translateX(-360px);
+  transition:transform .4s cubic-bezier(.22,1,.36,1);
+}
+.notif-resp.show{transform:translateX(0)}
+.notif-resp-icon{width:36px;height:36px;border-radius:50%;background:#e6f1fb;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;color:#185fa5}
+.notif-resp-title{font-size:13px;font-weight:700;color:#185fa5;margin-bottom:3px;display:flex;align-items:center;gap:6px}
+.notif-resp-title .badge-resp{background:#185fa5;color:#fff;font-size:10px;padding:1px 7px;border-radius:20px;font-weight:600}
 </style>
 </head>
 <body>
@@ -75,7 +119,7 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
       <span class="logo-sub">Você. Satisfeito</span>
     </div>
     <div class="title-area">
-      <h1>Gestão de Atendimentos — Liderança</h1>
+      <h1>Gestão de Atendimentos — Liderança <span id="badge-novos" style="display:none"></span></h1>
       <p id="datetime-display" style="font-size:11px;color:#888;margin-top:3px"></p>
     </div>
   </div>
@@ -90,7 +134,7 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
   <div class="toolbar">
     <input type="text" id="search-input" placeholder="Buscar por líder, demanda, orientação..." oninput="renderTable()">
     <button class="btn-add" onclick="openModal()"><i class="ti ti-plus"></i> Novo atendimento</button>
-    <div class="sync-badge" id="sync-badge"><span class="dot-offline" id="dot-status"></span> <span id="sync-label">Conectando...</span></div>
+    <div class="sync-badge"><span class="dot-offline" id="dot-status"></span> <span id="sync-label">Conectando...</span></div>
   </div>
 
   <div class="table-wrap">
@@ -99,6 +143,7 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
         <tr>
           <th>#</th>
           <th>Líder solicitante</th>
+          <th>Direcionado para</th>
           <th>Demanda solicitada</th>
           <th>Entendimento / Sugestão (base legal)</th>
           <th>Orientação gestão</th>
@@ -116,12 +161,45 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
   </div>
 </div>
 
+<!-- Notificação banner -->
+<div class="notif-banner" id="notif-banner">
+  <div class="notif-icon"><i class="ti ti-bell-ringing"></i></div>
+  <div class="notif-body">
+    <div class="notif-title"><span>Novo atendimento recebido</span><span class="badge-new">NOVO</span></div>
+    <div class="notif-text" id="notif-text"></div>
+    <div class="notif-time" id="notif-time"></div>
+  </div>
+  <button class="notif-close" onclick="fecharNotif()"><i class="ti ti-x"></i></button>
+</div>
+
+<!-- Banner resposta gestão -->
+<div class="notif-resp" id="notif-resp">
+  <div class="notif-resp-icon"><i class="ti ti-message-check"></i></div>
+  <div class="notif-body">
+    <div class="notif-resp-title"><span>Orientação recebida!</span><span class="badge-resp">RESPONDIDO</span></div>
+    <div class="notif-text" id="notif-resp-text"></div>
+    <div class="notif-time" id="notif-resp-time"></div>
+  </div>
+  <button class="notif-close" onclick="fecharNotifResp()"><i class="ti ti-x"></i></button>
+</div>
+
+<!-- Modal -->
 <div class="modal-bg" id="modal">
   <div class="modal">
     <h2 id="modal-title">Novo atendimento</h2>
-    <div class="form-row">
-      <label>Líder solicitante</label>
-      <input type="text" id="f-lider" placeholder="Nome do líder...">
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Líder solicitante</label>
+        <input type="text" id="f-lider" placeholder="Nome do líder...">
+      </div>
+      <div class="form-row">
+        <label>Direcionar para</label>
+        <select id="f-direcionar">
+          <option value="">Selecione a gestora...</option>
+          <option value="Larissa">Larissa</option>
+          <option value="Geovana">Geovana</option>
+        </select>
+      </div>
     </div>
     <div class="form-row">
       <label>Demanda solicitada</label>
@@ -176,25 +254,97 @@ const refAtendimentos = db.ref('atendimentos');
 
 let records = {};
 let editingId = null;
+let initialized = false;
+let novosNaoVistos = 0;
+let notifTimer = null;
 
-// Conexão em tempo real
+// Conexão
 db.ref('.info/connected').on('value', snap => {
   const dot = document.getElementById('dot-status');
   const label = document.getElementById('sync-label');
-  if (snap.val()) {
-    dot.className = 'dot-live';
-    label.textContent = 'Sincronizado em tempo real';
-  } else {
-    dot.className = 'dot-offline';
-    label.textContent = 'Reconectando...';
-  }
+  if(snap.val()){ dot.className='dot-live'; label.textContent='Sincronizado em tempo real'; }
+  else { dot.className='dot-offline'; label.textContent='Reconectando...'; }
 });
 
-// Escuta mudanças em tempo real
+// Escuta em tempo real
 refAtendimentos.on('value', snap => {
-  records = snap.val() || {};
+  const novos = snap.val() || {};
+
+  if(initialized){
+    Object.entries(novos).forEach(([id, r]) => {
+      if(!records[id]){
+        // Novo atendimento
+        novosNaoVistos++;
+        mostrarNotif(r);
+        atualizarBadge();
+      } else {
+        // Atendimento existente — verificar se orientacao foi preenchida agora
+        const anterior = records[id];
+        const tinhaOrientacao = anterior.orientacao && anterior.orientacao.trim() !== '';
+        const temOrientacao = r.orientacao && r.orientacao.trim() !== '';
+        if(!tinhaOrientacao && temOrientacao){
+          mostrarNotifResposta(r);
+        }
+      }
+    });
+  }
+
+  records = novos;
   renderTable();
+
+  if(!initialized) initialized = true;
 });
+
+function mostrarNotif(r){
+  const banner = document.getElementById('notif-banner');
+  document.getElementById('notif-text').innerHTML =
+    `<strong>${r.lider||'Líder'}</strong> direcionou para <strong>${r.direcionar||'Gestão'}</strong>.<br>
+     <span style="color:#555">${r.demanda ? r.demanda.substring(0,80)+(r.demanda.length>80?'...':'') : ''}</span>`;
+  const agora = new Date();
+  document.getElementById('notif-time').textContent =
+    agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+
+  banner.classList.add('show');
+
+  // Fecha automaticamente após 7s
+  if(notifTimer) clearTimeout(notifTimer);
+  notifTimer = setTimeout(fecharNotif, 7000);
+}
+
+function fecharNotif(){
+  document.getElementById('notif-banner').classList.remove('show');
+  novosNaoVistos = 0;
+  atualizarBadge();
+}
+
+let notifRespTimer = null;
+function mostrarNotifResposta(r){
+  const banner = document.getElementById('notif-resp');
+  document.getElementById('notif-resp-text').innerHTML =
+    `A gestão respondeu o chamado de <strong>${r.lider||'Líder'}</strong>.<br>
+     <span style="color:#185fa5;font-size:11px">${r.orientacao.substring(0,80)+(r.orientacao.length>80?'...':'')}</span>`;
+  const agora = new Date();
+  document.getElementById('notif-resp-time').textContent =
+    agora.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  banner.classList.add('show');
+  if(notifRespTimer) clearTimeout(notifRespTimer);
+  notifRespTimer = setTimeout(fecharNotifResp, 8000);
+}
+
+function fecharNotifResp(){
+  document.getElementById('notif-resp').classList.remove('show');
+}
+
+function atualizarBadge(){
+  const badge = document.getElementById('badge-novos');
+  if(novosNaoVistos > 0){
+    badge.style.display = 'inline-flex';
+    badge.className = 'badge-count';
+    badge.textContent = novosNaoVistos;
+  } else {
+    badge.style.display = 'none';
+  }
+}
 
 function urgClass(u){ return u==='Alta'?'b-alta':u==='Média'?'b-media':'b-baixa'; }
 function statusClass(s){ return s==='Encerrado'?'b-encerrado':s==='Em andamento'?'b-andamento':'b-pendente'; }
@@ -203,23 +353,27 @@ function initials(n){ if(!n) return '?'; return n.trim().split(' ').map(w=>w[0])
 
 function renderTable(){
   const q = (document.getElementById('search-input').value||'').toLowerCase();
-  const tbody = document.getElementById('tbody');
-  const list = Object.entries(records).map(([id,r])=>({...r,id}));
+  const list = Object.entries(records).map(([id,r])=>({...r,id}))
+    .sort((a,b)=>(b.criadoEm||0)-(a.criadoEm||0));
   const filtered = list.filter(r => !q || (r.lider+r.demanda+r.sugestao+r.orientacao).toLowerCase().includes(q));
 
+  const tbody = document.getElementById('tbody');
   if(!filtered.length){
     tbody.innerHTML='';
     document.getElementById('empty-msg').style.display='block';
   } else {
     document.getElementById('empty-msg').style.display='none';
     tbody.innerHTML = filtered.map((r,i)=>`
-      <tr>
+      <tr id="row-${r.id}" class="${r._novo?'novo-highlight':''}">
         <td style="color:#999;font-size:11px">${i+1}</td>
         <td>
           <div style="display:flex;align-items:center;gap:7px">
             <div class="avatar">${initials(r.lider)}</div>
             <span style="font-weight:500">${r.lider||'—'}</span>
           </div>
+        </td>
+        <td>
+          ${r.direcionar ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#f0eafa;color:#5b21b6;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600"><i class="ti ti-user-circle" style="font-size:13px"></i>${r.direcionar}</span>` : '—'}
         </td>
         <td>${r.demanda||'—'}</td>
         <td>${r.sugestao||'—'}</td>
@@ -243,11 +397,12 @@ function renderTable(){
 }
 
 function openModal(id){
-  editingId = id || null;
+  editingId = id||null;
   if(id && records[id]){
     const r = records[id];
     document.getElementById('modal-title').textContent = 'Editar atendimento';
     document.getElementById('f-lider').value = r.lider||'';
+    document.getElementById('f-direcionar').value = r.direcionar||'';
     document.getElementById('f-demanda').value = r.demanda||'';
     document.getElementById('f-sugestao').value = r.sugestao||'';
     document.getElementById('f-orientacao').value = r.orientacao||'';
@@ -257,6 +412,7 @@ function openModal(id){
   } else {
     document.getElementById('modal-title').textContent = 'Novo atendimento';
     ['f-lider','f-demanda','f-sugestao','f-orientacao'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('f-direcionar').value = '';
     document.getElementById('f-urgencia').value = 'Média';
     document.getElementById('f-status').value = 'Pendente';
     document.getElementById('f-prazo').value = '';
@@ -269,21 +425,17 @@ function closeModal(){ document.getElementById('modal').classList.remove('open')
 function saveRecord(){
   const rec = {
     lider: document.getElementById('f-lider').value.trim(),
+    direcionar: document.getElementById('f-direcionar').value,
     demanda: document.getElementById('f-demanda').value.trim(),
     sugestao: document.getElementById('f-sugestao').value.trim(),
     orientacao: document.getElementById('f-orientacao').value.trim(),
     urgencia: document.getElementById('f-urgencia').value,
     status: document.getElementById('f-status').value,
     prazo: document.getElementById('f-prazo').value,
-    updatedAt: Date.now()
+    criadoEm: editingId ? (records[editingId]?.criadoEm || Date.now()) : Date.now()
   };
-  if(editingId){
-    refAtendimentos.child(editingId).update(rec);
-    showToast('Atendimento atualizado!');
-  } else {
-    refAtendimentos.push(rec);
-    showToast('Atendimento salvo!');
-  }
+  if(editingId){ refAtendimentos.child(editingId).update(rec); showToast('Atendimento atualizado!'); }
+  else { refAtendimentos.push(rec); showToast('Atendimento salvo!'); }
   closeModal();
 }
 
@@ -303,14 +455,14 @@ function showToast(msg){
 }
 
 document.getElementById('modal').addEventListener('click', e=>{
-  if(e.target === document.getElementById('modal')) closeModal();
+  if(e.target===document.getElementById('modal')) closeModal();
 });
 
 function updateClock(){
   const now = new Date();
   document.getElementById('datetime-display').textContent =
-    now.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}) +
-    ' — ' + now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    now.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'})+
+    ' — '+now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 }
 updateClock();
 setInterval(updateClock, 1000);
