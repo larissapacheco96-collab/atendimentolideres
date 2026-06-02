@@ -64,6 +64,16 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
 .dot-offline{width:7px;height:7px;border-radius:50%;background:#ccc;display:inline-block}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
+/* Banner pedido de permissão push */
+.push-banner{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);z-index:9998;background:#1a1a1a;color:#fff;border-radius:12px;padding:14px 20px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 24px rgba(0,0,0,.2);transition:transform .4s cubic-bezier(.22,1,.36,1);min-width:320px;max-width:520px}
+.push-banner.show{transform:translateX(-50%) translateY(0)}
+.push-banner-text{flex:1;font-size:13px;line-height:1.5}
+.push-banner-text strong{display:block;margin-bottom:2px}
+.push-btn-sim{background:#007e6a;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.push-btn-sim:hover{background:#005f50}
+.push-btn-nao{background:none;border:1px solid #555;color:#ccc;border-radius:8px;padding:7px 10px;font-size:12px;cursor:pointer;white-space:nowrap;margin-left:4px}
+.push-btn-nao:hover{background:#333}
+
 /* Toast padrão */
 .toast{position:fixed;bottom:24px;right:24px;background:#1a1a1a;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
 .toast.show{opacity:1}
@@ -92,6 +102,40 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
 /* Badge contador no título */
 .badge-count{display:inline-flex;align-items:center;justify-content:center;background:#d4531e;color:#fff;font-size:10px;font-weight:700;border-radius:50%;width:18px;height:18px;margin-left:6px;vertical-align:middle;animation:popIn .3s ease}
 @keyframes popIn{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+
+/* Painel Gerencial */
+.painel-section{margin-top:2.5rem;padding-top:1.75rem;border-top:2px dashed #ddd}
+.painel-title{font-size:15px;font-weight:600;color:#1a1a1a;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.painel-title span{background:#e1f5ee;color:#0f6e56;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600}
+/* Filtros */
+.painel-filtros{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:1.25rem;background:#fff;border:1px solid #e8e8e4;border-radius:10px;padding:12px 16px}
+.filtro-group{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.filtro-label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;display:flex;align-items:center;gap:4px}
+.filtro-btns{display:flex;flex-wrap:wrap;gap:4px}
+.filtro-btn{background:#f5f5f0;border:1px solid #e0e0d8;border-radius:20px;padding:4px 12px;font-size:12px;cursor:pointer;color:#555;transition:all .15s;font-family:Arial,sans-serif}
+.filtro-btn:hover{background:#e6f5f0;border-color:#007e6a;color:#007e6a}
+.filtro-btn.active{background:#007e6a;color:#fff;border-color:#007e6a;font-weight:600}
+/* Cards */
+.painel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:1.5rem}
+.painel-card{background:#fff;border-radius:10px;border:1px solid #e8e8e4;padding:1rem 1.25rem}
+.painel-card-destaque{border:1.5px solid #9fe1cb;background:linear-gradient(135deg,#f0fdf8,#fff)}
+.painel-card-title{font-size:11px;color:#888;margin-bottom:10px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+.painel-card-body{display:flex;flex-direction:column;gap:6px}
+.painel-row{display:flex;align-items:center;justify-content:space-between;font-size:13px}
+.painel-row-label{display:flex;align-items:center;gap:6px;color:#444}
+.painel-row-val{font-weight:700;font-size:14px;color:#1a1a1a}
+.painel-bar-wrap{height:6px;background:#f0f0ec;border-radius:10px;margin-top:2px;overflow:hidden}
+.painel-bar{height:6px;border-radius:10px;transition:width .6s ease}
+/* Tabela histórico */
+.enc-list{margin-top:1rem}
+.enc-list-title{font-size:12px;font-weight:600;color:#555;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.enc-table-wrap{overflow-x:auto;border:1px solid #e8e8e4;border-radius:10px;background:#fff}
+.enc-table{width:100%;border-collapse:collapse;font-size:12px;min-width:700px}
+.enc-table thead th{background:#f8f8f5;padding:9px 10px;text-align:left;font-weight:500;font-size:11px;color:#666;border-bottom:1px solid #e8e8e4;white-space:nowrap}
+.enc-table tbody tr{border-bottom:1px solid #f5f5f2}
+.enc-table tbody tr:last-child{border-bottom:none}
+.enc-table tbody tr:hover{background:#fafafa}
+.enc-table td{padding:8px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word}
 
 /* Notificação resposta da gestão */
 .notif-resp{
@@ -147,6 +191,8 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
           <th>Demanda solicitada</th>
           <th>Entendimento / Sugestão (base legal)</th>
           <th>Orientação gestão</th>
+          <th>Respondido por</th>
+          <th>Retorno gestão</th>
           <th>Urgência / Status</th>
           <th>Prazo retorno gestão</th>
           <th></th>
@@ -170,6 +216,17 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
     <div class="notif-time" id="notif-time"></div>
   </div>
   <button class="notif-close" onclick="fecharNotif()"><i class="ti ti-x"></i></button>
+</div>
+
+<!-- Banner pedido permissão push -->
+<div class="push-banner" id="push-banner">
+  <div style="font-size:24px">🔔</div>
+  <div class="push-banner-text">
+    <strong>Receber notificações?</strong>
+    Avise-me de novos atendimentos mesmo com a aba fechada.
+  </div>
+  <button class="push-btn-sim" onclick="pedirPermissaoPush()">Ativar</button>
+  <button class="push-btn-nao" onclick="fecharPushBanner()">Agora não</button>
 </div>
 
 <!-- Banner resposta gestão -->
@@ -215,6 +272,20 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
     </div>
     <div class="form-grid">
       <div class="form-row">
+        <label>Gestora que respondeu</label>
+        <select id="f-gestora-resp">
+          <option value="">Selecione...</option>
+          <option value="Larissa">Larissa</option>
+          <option value="Geovana">Geovana</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Data de retorno da gestão</label>
+        <input type="date" id="f-data-retorno">
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-row">
         <label>Urgência</label>
         <select id="f-urgencia">
           <option value="Alta">Alta</option>
@@ -245,6 +316,84 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
 <div class="toast" id="toast"></div>
 
 <script>
+// ===== SERVICE WORKER PARA PUSH NOTIFICATIONS =====
+const SW_CODE = `
+self.addEventListener('push', e => {
+  const data = e.data ? e.data.json() : {};
+  self.registration.showNotification(data.title || 'OBDC', {
+    body: data.body || '',
+    icon: data.icon || '',
+    badge: data.badge || '',
+    tag: data.tag || 'obdc-notif',
+    renotify: true,
+    data: { url: data.url || self.location.origin }
+  });
+});
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(clients.matchAll({type:'window'}).then(cs => {
+    for(const c of cs){ if(c.url && 'focus' in c) return c.focus(); }
+    if(clients.openWindow) return clients.openWindow(e.notification.data.url);
+  }));
+});
+`;
+
+let swRegistration = null;
+
+async function iniciarSW(){
+  if(!('serviceWorker' in navigator) || !('Notification' in window)) return;
+  try {
+    const blob = new Blob([SW_CODE], {type:'application/javascript'});
+    const swUrl = URL.createObjectURL(blob);
+    swRegistration = await navigator.serviceWorker.register(swUrl, {scope:'/'});
+  } catch(e){ console.warn('SW erro:', e); }
+}
+
+async function pedirPermissaoPush(){
+  fecharPushBanner();
+  const perm = await Notification.requestPermission();
+  if(perm === 'granted'){
+    await iniciarSW();
+    showToast('✅ Notificações ativadas!');
+    localStorage.setItem('push_perm','granted');
+  } else {
+    showToast('Permissão negada. Você pode ativar nas configurações do navegador.');
+  }
+}
+
+function fecharPushBanner(){
+  document.getElementById('push-banner').classList.remove('show');
+  localStorage.setItem('push_dismissed','1');
+}
+
+function enviarPushNotif(title, body){
+  if(!swRegistration || Notification.permission !== 'granted') return;
+  swRegistration.showNotification(title, {
+    body: body,
+    icon: 'https://www.google.com/s2/favicons?domain=obdc.com.br&sz=64',
+    tag: 'obdc-atendimento',
+    renotify: true
+  });
+}
+
+function verificarPermissaoPush(){
+  if(!('Notification' in window)) return;
+  if(Notification.permission === 'granted'){
+    localStorage.setItem('push_perm','granted');
+    iniciarSW();
+    return;
+  }
+  // Mostrar banner se nunca pediu e não foi dispensado
+  const dismissed = localStorage.getItem('push_dismissed');
+  const granted = localStorage.getItem('push_perm');
+  if(!dismissed && !granted && Notification.permission !== 'denied'){
+    setTimeout(()=>{
+      document.getElementById('push-banner').classList.add('show');
+    }, 2000);
+  }
+}
+// ===== FIM SERVICE WORKER =====
+
 const firebaseConfig = {
   databaseURL: "https://atendimentolideres-default-rtdb.firebaseio.com"
 };
@@ -277,6 +426,10 @@ refAtendimentos.on('value', snap => {
         novosNaoVistos++;
         mostrarNotif(r);
         atualizarBadge();
+        enviarPushNotif(
+          '🔔 Novo atendimento — OBDC',
+          (r.lider||'Líder') + ' direcionou para ' + (r.direcionar||'Gestão') + ': ' + (r.demanda||'').substring(0,80)
+        );
       } else {
         // Atendimento existente — verificar se orientacao foi preenchida agora
         const anterior = records[id];
@@ -284,6 +437,10 @@ refAtendimentos.on('value', snap => {
         const temOrientacao = r.orientacao && r.orientacao.trim() !== '';
         if(!tinhaOrientacao && temOrientacao){
           mostrarNotifResposta(r);
+          enviarPushNotif(
+            '✅ Orientação recebida — OBDC',
+            (r.gestoraResp||'Gestão') + ' respondeu o chamado de ' + (r.lider||'Líder')
+          );
         }
       }
     });
@@ -320,8 +477,10 @@ function fecharNotif(){
 let notifRespTimer = null;
 function mostrarNotifResposta(r){
   const banner = document.getElementById('notif-resp');
+  const dataFmt = r.dataRetorno ? ` — Retorno: ${formatDate(r.dataRetorno)}` : '';
+  const gestoraFmt = r.gestoraResp ? `<strong>${r.gestoraResp}</strong>` : 'A gestão';
   document.getElementById('notif-resp-text').innerHTML =
-    `A gestão respondeu o chamado de <strong>${r.lider||'Líder'}</strong>.<br>
+    `${gestoraFmt} respondeu o chamado de <strong>${r.lider||'Líder'}</strong>${dataFmt}.<br>
      <span style="color:#185fa5;font-size:11px">${r.orientacao.substring(0,80)+(r.orientacao.length>80?'...':'')}</span>`;
   const agora = new Date();
   document.getElementById('notif-resp-time').textContent =
@@ -379,6 +538,10 @@ function renderTable(){
         <td>${r.sugestao||'—'}</td>
         <td>${r.orientacao||'—'}</td>
         <td>
+          ${r.gestoraResp ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#f0eafa;color:#5b21b6;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600"><i class="ti ti-user-check" style="font-size:13px"></i>${r.gestoraResp}</span>` : '<span style="color:#ccc">—</span>'}
+        </td>
+        <td style="font-size:12px;white-space:nowrap">${r.dataRetorno ? formatDate(r.dataRetorno) : '<span style="color:#ccc">—</span>'}</td>
+        <td>
           <span class="badge ${urgClass(r.urgencia)}">${r.urgencia}</span>
           <div style="margin-top:4px"><span class="badge ${statusClass(r.status)}">${r.status}</span></div>
         </td>
@@ -394,6 +557,108 @@ function renderTable(){
   document.getElementById('s-pendente').textContent = list.filter(r=>r.status==='Pendente').length;
   document.getElementById('s-andamento').textContent = list.filter(r=>r.status==='Em andamento').length;
   document.getElementById('s-alta').textContent = list.filter(r=>r.urgencia==='Alta').length;
+  renderPainel();
+}
+
+// Filtros do painel
+let filtroGestora = 'todas';
+let filtroMes = 'todos';
+
+function setFiltroGestora(el){
+  filtroGestora = el.dataset.val;
+  document.querySelectorAll('#filtro-gestora .filtro-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderPainel();
+}
+function setFiltroMes(el){
+  filtroMes = el.dataset.val;
+  document.querySelectorAll('#filtro-mes .filtro-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderPainel();
+}
+
+function renderPainel(){
+  const list = Object.values(records);
+  const todosEncerrados = list.filter(r => r.status === 'Encerrado');
+
+  // Aplicar filtros
+  let encerrados = todosEncerrados.filter(r => {
+    const okGestora = filtroGestora === 'todas' || r.gestoraResp === filtroGestora;
+    let okMes = true;
+    if(filtroMes !== 'todos'){
+      const dataRef = r.dataRetorno || '';
+      if(dataRef) okMes = dataRef.split('-')[1] === filtroMes;
+      else if(r.criadoEm) okMes = new Date(r.criadoEm).getMonth()+1 === parseInt(filtroMes);
+      else okMes = false;
+    }
+    return okGestora && okMes;
+  });
+
+  const total = encerrados.length;
+  const totalGeral = list.length;
+  const pct = totalGeral > 0 ? Math.round((todosEncerrados.length/totalGeral)*100) : 0;
+
+  document.getElementById('painel-total-enc').textContent = todosEncerrados.length + ' encerrado' + (todosEncerrados.length !== 1 ? 's' : '');
+
+  // Card destaque
+  document.getElementById('pc-total').textContent = total;
+  document.getElementById('pc-taxa').innerHTML = `Taxa de conclusão geral: <strong>${pct}%</strong>`;
+
+  // Por gestora
+  const gestoras = ['Larissa','Geovana'];
+  const maxG = Math.max(...gestoras.map(g => encerrados.filter(r=>r.gestoraResp===g).length), 1);
+  document.getElementById('painel-gestora').innerHTML = gestoras.map(g => {
+    const qtd = encerrados.filter(r=>r.gestoraResp===g).length;
+    return `
+    <div class="painel-row"><span class="painel-row-label"><span style="width:10px;height:10px;border-radius:50%;background:#f0eafa;border:2px solid #5b21b6;display:inline-block"></span>${g}</span><span class="painel-row-val" style="color:#5b21b6">${qtd}</span></div>
+    <div class="painel-bar-wrap"><div class="painel-bar" style="width:${Math.round((qtd/maxG)*100)}%;background:#5b21b6"></div></div>`;
+  }).join('') + (() => {
+    const sem = encerrados.filter(r=>!r.gestoraResp).length;
+    return sem > 0 ? `<div style="font-size:11px;color:#aaa;margin-top:4px">Sem registro: ${sem}</div>` : '';
+  })();
+
+  // Por urgência
+  const urgs = [{l:'Alta',c:'#a32d2d',bg:'#fcebeb'},{l:'Média',c:'#854f0b',bg:'#faeeda'},{l:'Baixa',c:'#3b6d11',bg:'#eaf3de'}];
+  const maxU = Math.max(...urgs.map(u=>encerrados.filter(r=>r.urgencia===u.l).length), 1);
+  document.getElementById('painel-urgencia').innerHTML = urgs.map(u => {
+    const qtd = encerrados.filter(r=>r.urgencia===u.l).length;
+    return `
+    <div class="painel-row"><span class="painel-row-label"><span style="width:10px;height:10px;border-radius:50%;background:${u.bg};border:2px solid ${u.c};display:inline-block"></span>${u.l}</span><span class="painel-row-val" style="color:${u.c}">${qtd}</span></div>
+    <div class="painel-bar-wrap"><div class="painel-bar" style="width:${Math.round((qtd/maxU)*100)}%;background:${u.c}"></div></div>`;
+  }).join('');
+
+  // Top líderes
+  const contLider = {};
+  encerrados.forEach(r=>{ if(r.lider) contLider[r.lider]=(contLider[r.lider]||0)+1; });
+  const topLideres = Object.entries(contLider).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const maxL = topLideres.length > 0 ? topLideres[0][1] : 1;
+  document.getElementById('painel-lideres').innerHTML = topLideres.length > 0
+    ? topLideres.map(([nome,qtd]) => `
+      <div class="painel-row"><span class="painel-row-label"><div class="avatar" style="width:18px;height:18px;font-size:8px;flex-shrink:0">${initials(nome)}</div>${nome}</span><span class="painel-row-val">${qtd}</span></div>
+      <div class="painel-bar-wrap"><div class="painel-bar" style="width:${Math.round((qtd/maxL)*100)}%;background:#185fa5"></div></div>`).join('')
+    : '<span style="font-size:12px;color:#aaa">Nenhum ainda</span>';
+
+  // Tabela histórico filtrado
+  const encTbody = document.getElementById('enc-tbody');
+  document.getElementById('enc-count-label').textContent = total > 0 ? `— ${total} registro${total!==1?'s':''}` : '';
+  if(!encerrados.length){
+    encTbody.innerHTML='';
+    document.getElementById('enc-empty').style.display='block';
+  } else {
+    document.getElementById('enc-empty').style.display='none';
+    encTbody.innerHTML = encerrados
+      .sort((a,b)=>(b.criadoEm||0)-(a.criadoEm||0))
+      .map((r,i)=>`
+      <tr>
+        <td style="color:#999;font-size:11px">${i+1}</td>
+        <td><div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="width:22px;height:22px;font-size:9px">${initials(r.lider)}</div><span style="font-weight:500">${r.lider||'—'}</span></div></td>
+        <td style="max-width:160px">${r.demanda||'—'}</td>
+        <td style="max-width:180px">${r.orientacao||'—'}</td>
+        <td>${r.gestoraResp?`<span style="background:#f0eafa;color:#5b21b6;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600">${r.gestoraResp}</span>`:'—'}</td>
+        <td style="white-space:nowrap">${formatDate(r.dataRetorno)}</td>
+        <td><span class="badge ${urgClass(r.urgencia)}">${r.urgencia||'—'}</span></td>
+      </tr>`).join('');
+  }
 }
 
 function openModal(id){
@@ -406,6 +671,8 @@ function openModal(id){
     document.getElementById('f-demanda').value = r.demanda||'';
     document.getElementById('f-sugestao').value = r.sugestao||'';
     document.getElementById('f-orientacao').value = r.orientacao||'';
+    document.getElementById('f-gestora-resp').value = r.gestoraResp||'';
+    document.getElementById('f-data-retorno').value = r.dataRetorno||'';
     document.getElementById('f-urgencia').value = r.urgencia||'Média';
     document.getElementById('f-status').value = r.status||'Pendente';
     document.getElementById('f-prazo').value = r.prazo||'';
@@ -413,6 +680,8 @@ function openModal(id){
     document.getElementById('modal-title').textContent = 'Novo atendimento';
     ['f-lider','f-demanda','f-sugestao','f-orientacao'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('f-direcionar').value = '';
+    document.getElementById('f-gestora-resp').value = '';
+    document.getElementById('f-data-retorno').value = '';
     document.getElementById('f-urgencia').value = 'Média';
     document.getElementById('f-status').value = 'Pendente';
     document.getElementById('f-prazo').value = '';
@@ -429,6 +698,8 @@ function saveRecord(){
     demanda: document.getElementById('f-demanda').value.trim(),
     sugestao: document.getElementById('f-sugestao').value.trim(),
     orientacao: document.getElementById('f-orientacao').value.trim(),
+    gestoraResp: document.getElementById('f-gestora-resp').value,
+    dataRetorno: document.getElementById('f-data-retorno').value,
     urgencia: document.getElementById('f-urgencia').value,
     status: document.getElementById('f-status').value,
     prazo: document.getElementById('f-prazo').value,
@@ -466,6 +737,7 @@ function updateClock(){
 }
 updateClock();
 setInterval(updateClock, 1000);
+verificarPermissaoPush();
 </script>
 </body>
 </html>
