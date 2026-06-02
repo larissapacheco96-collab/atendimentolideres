@@ -247,7 +247,6 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
               <th>Líder</th>
               <th>Demanda</th>
               <th>Respondido por</th>
-              <th>Retorno gestão</th>
               <th>Urgência</th>
             </tr>
           </thead>
@@ -289,9 +288,9 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
           <th>Líder solicitante</th>
           <th>Direcionado para</th>
           <th>Demanda solicitada</th>
-          <th>Entendimento / Sugestão (base legal)</th>
+          <th>Entendimento Solicitante / Base Legal</th>
+          <th>Orientação gestão</th>
           <th>Respondido por</th>
-          <th>Retorno gestão</th>
           <th>Urgência / Status</th>
           <th>Prazo retorno gestão</th>
           <th></th>
@@ -643,10 +642,10 @@ function renderTable(){
         </td>
         <td>${r.demanda||'—'}</td>
         <td>${r.sugestao||'—'}</td>
+        <td style="max-width:180px">${r.orientacao || '<span style="color:#ccc">—</span>'}</td>
         <td>
           ${r.gestoraResp ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#f0eafa;color:#5b21b6;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600"><i class="ti ti-user-check" style="font-size:13px"></i>${r.gestoraResp}</span>` : '<span style="color:#ccc">—</span>'}
         </td>
-        <td style="font-size:12px;white-space:nowrap">${r.dataRetorno ? formatDate(r.dataRetorno) : '<span style="color:#ccc">—</span>'}</td>
         <td>
           <span class="badge ${urgClass(r.urgencia)}">${r.urgencia}</span>
           <div style="margin-top:4px"><span class="badge ${statusClass(r.status)}">${r.status}</span></div>
@@ -770,7 +769,6 @@ function renderPainel(){
         <td><div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="width:22px;height:22px;font-size:9px">${initials(r.lider)}</div><span style="font-weight:500">${r.lider||'—'}</span></div></td>
         <td style="max-width:160px">${r.demanda||'—'}</td>
         <td>${r.gestoraResp?`<span style="background:#f0eafa;color:#5b21b6;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600">${r.gestoraResp}</span>`:'—'}</td>
-        <td style="white-space:nowrap">${formatDate(r.dataRetorno)}</td>
         <td><span class="badge ${urgClass(r.urgencia)}">${r.urgencia||'—'}</span></td>
       </tr>`).join('');
   }
