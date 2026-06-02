@@ -104,7 +104,7 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
 @keyframes popIn{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
 
 /* Painel Gerencial */
-.painel-section{margin-top:2.5rem;padding-top:1.75rem;border-top:2px dashed #ddd}
+.painel-section{margin-top:0;padding-top:0}
 .painel-title{font-size:15px;font-weight:600;color:#1a1a1a;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .painel-title span{background:#e1f5ee;color:#0f6e56;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600}
 /* Filtros */
@@ -115,10 +115,14 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
 .filtro-btn{background:#f5f5f0;border:1px solid #e0e0d8;border-radius:20px;padding:4px 12px;font-size:12px;cursor:pointer;color:#555;transition:all .15s;font-family:Arial,sans-serif}
 .filtro-btn:hover{background:#e6f5f0;border-color:#007e6a;color:#007e6a}
 .filtro-btn.active{background:#007e6a;color:#fff;border-color:#007e6a;font-weight:600}
+.filtro-btn-tab{background:#fff;border:1px solid #ddd;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;color:#555;transition:all .15s;font-family:Arial,sans-serif;display:inline-flex;align-items:center;gap:5px}
+.filtro-btn-tab:hover{background:#e6f5f0;border-color:#007e6a;color:#007e6a}
+.filtro-btn-tab.active{background:#007e6a;color:#fff;border-color:#007e6a;font-weight:600}
 /* Cards */
 .painel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:1.5rem}
 .painel-card{background:#fff;border-radius:10px;border:1px solid #e8e8e4;padding:1rem 1.25rem}
-.painel-card-destaque{border:1.5px solid #9fe1cb;background:linear-gradient(135deg,#f0fdf8,#fff)}
+.painel-card-destaque{border:1.5px solid #ddd;background:#fff}
+.painel-card-enc{border:1.5px solid #9fe1cb;background:linear-gradient(135deg,#f0fdf8,#fff)}
 .painel-card-title{font-size:11px;color:#888;margin-bottom:10px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
 .painel-card-body{display:flex;flex-direction:column;gap:6px}
 .painel-row{display:flex;align-items:center;justify-content:space-between;font-size:13px}
@@ -168,6 +172,97 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
     </div>
   </div>
 
+  <!-- PAINEL GERENCIAL FIXO NO TOPO -->
+  <div class="painel-section">
+    <div class="painel-title">
+      <i class="ti ti-chart-bar" style="font-size:18px;color:#0f6e56"></i>
+      Painel Gerencial — Atendimentos Realizados
+      <span id="painel-total-enc">0 encerrados</span>
+    </div>
+
+    <!-- Filtros -->
+    <div class="painel-filtros">
+      <div class="filtro-group">
+        <label class="filtro-label"><i class="ti ti-user-circle"></i> Gestora</label>
+        <div class="filtro-btns" id="filtro-gestora">
+          <button class="filtro-btn active" data-val="todas" onclick="setFiltroGestora(this)">Todas</button>
+          <button class="filtro-btn" data-val="Larissa" onclick="setFiltroGestora(this)">Larissa</button>
+          <button class="filtro-btn" data-val="Geovana" onclick="setFiltroGestora(this)">Geovana</button>
+        </div>
+      </div>
+      <div class="filtro-group">
+        <label class="filtro-label"><i class="ti ti-calendar"></i> Mês</label>
+        <div class="filtro-btns" id="filtro-mes">
+          <button class="filtro-btn active" data-val="todos" onclick="setFiltroMes(this)">Todos</button>
+          <button class="filtro-btn" data-val="01" onclick="setFiltroMes(this)">Jan</button>
+          <button class="filtro-btn" data-val="02" onclick="setFiltroMes(this)">Fev</button>
+          <button class="filtro-btn" data-val="03" onclick="setFiltroMes(this)">Mar</button>
+          <button class="filtro-btn" data-val="04" onclick="setFiltroMes(this)">Abr</button>
+          <button class="filtro-btn" data-val="05" onclick="setFiltroMes(this)">Mai</button>
+          <button class="filtro-btn" data-val="06" onclick="setFiltroMes(this)">Jun</button>
+          <button class="filtro-btn" data-val="07" onclick="setFiltroMes(this)">Jul</button>
+          <button class="filtro-btn" data-val="08" onclick="setFiltroMes(this)">Ago</button>
+          <button class="filtro-btn" data-val="09" onclick="setFiltroMes(this)">Set</button>
+          <button class="filtro-btn" data-val="10" onclick="setFiltroMes(this)">Out</button>
+          <button class="filtro-btn" data-val="11" onclick="setFiltroMes(this)">Nov</button>
+          <button class="filtro-btn" data-val="12" onclick="setFiltroMes(this)">Dez</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards -->
+    <div class="painel-grid">
+      <div class="painel-card painel-card-destaque">
+        <div class="painel-card-title">Total atendimentos</div>
+        <div style="font-size:42px;font-weight:700;color:#1a1a1a;line-height:1" id="pc-total-geral">0</div>
+        <div style="font-size:12px;color:#888;margin-top:6px" id="pc-taxa"></div>
+      </div>
+      <div class="painel-card painel-card-enc">
+        <div class="painel-card-title">Encerrados</div>
+        <div style="font-size:42px;font-weight:700;color:#0f6e56;line-height:1" id="pc-total">0</div>
+        <div style="font-size:12px;color:#aaa;margin-top:6px" id="pc-enc-sub"></div>
+      </div>
+      <div class="painel-card">
+        <div class="painel-card-title">Por gestora</div>
+        <div class="painel-card-body" id="painel-gestora"></div>
+      </div>
+      <div class="painel-card">
+        <div class="painel-card-title">Por urgência</div>
+        <div class="painel-card-body" id="painel-urgencia"></div>
+      </div>
+      <div class="painel-card">
+        <div class="painel-card-title">Top líderes</div>
+        <div class="painel-card-body" id="painel-lideres"></div>
+      </div>
+    </div>
+
+    <!-- Tabela histórico -->
+    <div class="enc-list">
+      <div class="enc-list-title"><i class="ti ti-circle-check" style="color:#0f6e56"></i> Histórico de encerrados <span id="enc-count-label" style="font-size:11px;color:#aaa;font-weight:400"></span></div>
+      <div class="enc-table-wrap">
+        <table class="enc-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Líder</th>
+              <th>Demanda</th>
+              <th>Respondido por</th>
+              <th>Retorno gestão</th>
+              <th>Urgência</th>
+            </tr>
+          </thead>
+          <tbody id="enc-tbody"></tbody>
+        </table>
+        <div id="enc-empty" style="text-align:center;padding:1.5rem;color:#aaa;font-size:13px;display:none">
+          <i class="ti ti-inbox" style="font-size:22px;display:block;margin-bottom:6px"></i>
+          Nenhum atendimento encerrado encontrado.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="border-top:2px dashed #ddd;margin:1.5rem 0"></div>
+
   <div class="stats">
     <div class="stat"><div class="stat-label">Total</div><div class="stat-val" id="s-total">0</div></div>
     <div class="stat"><div class="stat-label">Pendentes</div><div class="stat-val" id="s-pendente">0</div></div>
@@ -176,7 +271,12 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
   </div>
 
   <div class="toolbar">
-    <input type="text" id="search-input" placeholder="Buscar por líder, demanda, orientação..." oninput="renderTable()">
+    <input type="text" id="search-input" placeholder="Buscar por líder, demanda..." oninput="renderTable()">
+    <div class="filtro-btns" id="filtro-status-tabela">
+      <button class="filtro-btn-tab active" data-val="todos" onclick="setFiltroStatusTabela(this)"><i class="ti ti-list"></i> Todos</button>
+      <button class="filtro-btn-tab" data-val="abertos" onclick="setFiltroStatusTabela(this)"><i class="ti ti-clock"></i> Em aberto</button>
+      <button class="filtro-btn-tab" data-val="Encerrado" onclick="setFiltroStatusTabela(this)"><i class="ti ti-circle-check"></i> Encerrados</button>
+    </div>
     <button class="btn-add" onclick="openModal()"><i class="ti ti-plus"></i> Novo atendimento</button>
     <div class="sync-badge"><span class="dot-offline" id="dot-status"></span> <span id="sync-label">Conectando...</span></div>
   </div>
@@ -190,7 +290,6 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
           <th>Direcionado para</th>
           <th>Demanda solicitada</th>
           <th>Entendimento / Sugestão (base legal)</th>
-          <th>Orientação gestão</th>
           <th>Respondido por</th>
           <th>Retorno gestão</th>
           <th>Urgência / Status</th>
@@ -514,7 +613,15 @@ function renderTable(){
   const q = (document.getElementById('search-input').value||'').toLowerCase();
   const list = Object.entries(records).map(([id,r])=>({...r,id}))
     .sort((a,b)=>(b.criadoEm||0)-(a.criadoEm||0));
-  const filtered = list.filter(r => !q || (r.lider+r.demanda+r.sugestao+r.orientacao).toLowerCase().includes(q));
+  const filtered = list.filter(r => {
+    const matchQ = !q || (r.lider+r.demanda+r.sugestao).toLowerCase().includes(q);
+    const matchStatus = filtroStatusTabela === 'todos'
+      ? true
+      : filtroStatusTabela === 'abertos'
+        ? r.status !== 'Encerrado'
+        : r.status === 'Encerrado';
+    return matchQ && matchStatus;
+  });
 
   const tbody = document.getElementById('tbody');
   if(!filtered.length){
@@ -536,7 +643,6 @@ function renderTable(){
         </td>
         <td>${r.demanda||'—'}</td>
         <td>${r.sugestao||'—'}</td>
-        <td>${r.orientacao||'—'}</td>
         <td>
           ${r.gestoraResp ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#f0eafa;color:#5b21b6;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600"><i class="ti ti-user-check" style="font-size:13px"></i>${r.gestoraResp}</span>` : '<span style="color:#ccc">—</span>'}
         </td>
@@ -563,6 +669,14 @@ function renderTable(){
 // Filtros do painel
 let filtroGestora = 'todas';
 let filtroMes = 'todos';
+let filtroStatusTabela = 'todos';
+
+function setFiltroStatusTabela(el){
+  filtroStatusTabela = el.dataset.val;
+  document.querySelectorAll('#filtro-status-tabela .filtro-btn-tab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderTable();
+}
 
 function setFiltroGestora(el){
   filtroGestora = el.dataset.val;
@@ -600,9 +714,11 @@ function renderPainel(){
 
   document.getElementById('painel-total-enc').textContent = todosEncerrados.length + ' encerrado' + (todosEncerrados.length !== 1 ? 's' : '');
 
-  // Card destaque
+  // Cards topo
+  document.getElementById('pc-total-geral').textContent = list.length;
+  document.getElementById('pc-taxa').innerHTML = 'Pendentes: <strong>' + list.filter(r=>r.status==='Pendente').length + '</strong> &nbsp;|&nbsp; Em andamento: <strong>' + list.filter(r=>r.status==='Em andamento').length + '</strong>';
   document.getElementById('pc-total').textContent = total;
-  document.getElementById('pc-taxa').innerHTML = `Taxa de conclusão geral: <strong>${pct}%</strong>`;
+  document.getElementById('pc-enc-sub').innerHTML = 'Taxa de conclusão: <strong>' + pct + '%</strong>';
 
   // Por gestora
   const gestoras = ['Larissa','Geovana'];
@@ -653,7 +769,6 @@ function renderPainel(){
         <td style="color:#999;font-size:11px">${i+1}</td>
         <td><div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="width:22px;height:22px;font-size:9px">${initials(r.lider)}</div><span style="font-weight:500">${r.lider||'—'}</span></div></td>
         <td style="max-width:160px">${r.demanda||'—'}</td>
-        <td style="max-width:180px">${r.orientacao||'—'}</td>
         <td>${r.gestoraResp?`<span style="background:#f0eafa;color:#5b21b6;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600">${r.gestoraResp}</span>`:'—'}</td>
         <td style="white-space:nowrap">${formatDate(r.dataRetorno)}</td>
         <td><span class="badge ${urgClass(r.urgencia)}">${r.urgencia||'—'}</span></td>
