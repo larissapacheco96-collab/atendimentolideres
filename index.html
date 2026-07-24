@@ -119,6 +119,9 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
 .filtro-btn-tab{background:#fff;border:1px solid #ddd;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;color:#555;transition:all .15s;font-family:Arial,sans-serif;display:inline-flex;align-items:center;gap:5px}
 .filtro-btn-tab:hover{background:#e6f5f0;border-color:#007e6a;color:#007e6a}
 .filtro-btn-tab.active{background:#007e6a;color:#fff;border-color:#007e6a;font-weight:600}
+.filtro-btn-dir{background:#fff;border:1px solid #ddd;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;color:#555;transition:all .15s;font-family:Arial,sans-serif;display:inline-flex;align-items:center;gap:5px}
+.filtro-btn-dir:hover{background:#f0eafa;border-color:#5b21b6;color:#5b21b6}
+.filtro-btn-dir.active{background:#5b21b6;color:#fff;border-color:#5b21b6;font-weight:600}
 /* Cards */
 .painel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:1.5rem}
 .painel-card{background:#fff;border-radius:10px;border:1px solid #e8e8e4;padding:1rem 1.25rem;box-shadow:0 1px 2px rgba(0,0,0,.03)}
@@ -276,6 +279,12 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
 
   <div class="toolbar">
     <input type="text" id="search-input" placeholder="Buscar por líder, demanda..." oninput="tabelaLimite=15;renderTable()">
+    <div class="filtro-btns" id="filtro-direcionado-tabela">
+      <button class="filtro-btn-dir active" data-val="todas" onclick="setFiltroDirecionadoTabela(this)"><i class="ti ti-user-circle"></i> Todas</button>
+      <button class="filtro-btn-dir" data-val="Larissa" onclick="setFiltroDirecionadoTabela(this)">Larissa</button>
+      <button class="filtro-btn-dir" data-val="Geovana" onclick="setFiltroDirecionadoTabela(this)">Geovana</button>
+      <button class="filtro-btn-dir" data-val="sem" onclick="setFiltroDirecionadoTabela(this)"><i class="ti ti-user-off"></i> Sem direcionamento</button>
+    </div>
     <div class="filtro-btns" id="filtro-status-tabela">
       <button class="filtro-btn-tab active" data-val="abertos" onclick="setFiltroStatusTabela(this)"><i class="ti ti-clock"></i> Em aberto</button>
       <button class="filtro-btn-tab" data-val="Encerrado" onclick="setFiltroStatusTabela(this)"><i class="ti ti-circle-check"></i> Encerrados</button>
@@ -606,7 +615,12 @@ function renderTable(){
       : filtroStatusTabela === 'abertos'
         ? r.status !== 'Encerrado'
         : r.status === 'Encerrado';
-    return matchQ && matchStatus;
+    const matchDirecionado = filtroDirecionadoTabela === 'todas'
+      ? true
+      : filtroDirecionadoTabela === 'sem'
+        ? (!r.direcionar || r.direcionar.trim() === '')
+        : r.direcionar === filtroDirecionadoTabela;
+    return matchQ && matchStatus && matchDirecionado;
   });
 
   const visiveis = filtered.slice(0, tabelaLimite);
@@ -662,12 +676,21 @@ function renderTable(){
 // Filtros do painel
 let filtroGestora = 'todas';
 let filtroStatusTabela = 'abertos';
+let filtroDirecionadoTabela = 'todas';
 let tabelaLimite = 15;
 
 function setFiltroStatusTabela(el){
   filtroStatusTabela = el.dataset.val;
   tabelaLimite = 15;
   document.querySelectorAll('#filtro-status-tabela .filtro-btn-tab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderTable();
+}
+
+function setFiltroDirecionadoTabela(el){
+  filtroDirecionadoTabela = el.dataset.val;
+  tabelaLimite = 15;
+  document.querySelectorAll('#filtro-direcionado-tabela .filtro-btn-dir').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
   renderTable();
 }
