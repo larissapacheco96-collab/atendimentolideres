@@ -20,11 +20,11 @@ body{font-family:Arial,sans-serif;background:#f5f5f0;color:#1a1a1a}
 .btn-add{background:#007e6a;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
 .btn-add:hover{background:#005f50}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:1.25rem}
-.stat{background:#fff;border-radius:8px;padding:.75rem 1rem;border:1px solid #e8e8e4}
+.stat{background:#fff;border-radius:8px;padding:.75rem 1rem;border:1px solid #e8e8e4;box-shadow:0 1px 2px rgba(0,0,0,.03)}
 .stat-label{font-size:11px;color:#666;margin-bottom:4px}
 .stat-val{font-size:22px;font-weight:500;color:#1a1a1a}
 .stat-val.urg{color:#a32d2d}
-.table-wrap{overflow-x:auto;border:1px solid #ddd;border-radius:12px;background:#fff}
+.table-wrap{overflow-x:auto;border:1px solid #ddd;border-radius:12px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.04)}
 table{width:100%;border-collapse:collapse;font-size:12px;min-width:1000px}
 thead th{background:#f8f8f5;padding:10px;text-align:left;font-weight:500;font-size:11px;color:#666;border-bottom:1px solid #ddd;white-space:nowrap}
 tbody tr{border-bottom:1px solid #f0f0ec;transition:background .15s}
@@ -115,12 +115,22 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
 .filtro-btn{background:#f5f5f0;border:1px solid #e0e0d8;border-radius:20px;padding:4px 12px;font-size:12px;cursor:pointer;color:#555;transition:all .15s;font-family:Arial,sans-serif}
 .filtro-btn:hover{background:#e6f5f0;border-color:#007e6a;color:#007e6a}
 .filtro-btn.active{background:#007e6a;color:#fff;border-color:#007e6a;font-weight:600}
+.mini-date{font-size:12px;padding:5px 8px;border:1px solid #ccc;border-radius:8px;background:#fff;color:#1a1a1a;font-family:Arial,sans-serif}
 .filtro-btn-tab{background:#fff;border:1px solid #ddd;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;color:#555;transition:all .15s;font-family:Arial,sans-serif;display:inline-flex;align-items:center;gap:5px}
 .filtro-btn-tab:hover{background:#e6f5f0;border-color:#007e6a;color:#007e6a}
 .filtro-btn-tab.active{background:#007e6a;color:#fff;border-color:#007e6a;font-weight:600}
 /* Cards */
 .painel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:1.5rem}
-.painel-card{background:#fff;border-radius:10px;border:1px solid #e8e8e4;padding:1rem 1.25rem}
+.painel-card{background:#fff;border-radius:10px;border:1px solid #e8e8e4;padding:1rem 1.25rem;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.painel-toggle{margin-left:auto;background:#f5f5f0;border:1px solid #e0e0d8;border-radius:8px;padding:5px 12px;font-size:12px;color:#555;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:Arial,sans-serif}
+.painel-toggle:hover{background:#e6f5f0;border-color:#007e6a;color:#007e6a}
+.painel-toggle i{transition:transform .25s}
+.painel-toggle.open i{transform:rotate(180deg)}
+.painel-body{display:none}
+.painel-body.open{display:block}
+.load-more-wrap{text-align:center;margin-top:14px}
+.btn-load-more{background:none;border:1px solid #ccc;color:#444;border-radius:8px;padding:8px 18px;font-size:12.5px;cursor:pointer;font-family:Arial,sans-serif}
+.btn-load-more:hover{background:#f5f5f0;border-color:#007e6a;color:#007e6a}
 .painel-card-destaque{border:1.5px solid #ddd;background:#fff}
 .painel-card-enc{border:1.5px solid #9fe1cb;background:linear-gradient(135deg,#f0fdf8,#fff)}
 .painel-card-title{font-size:11px;color:#888;margin-bottom:10px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
@@ -172,7 +182,7 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
     </div>
   </div>
 
-  <!-- PAINEL GERENCIAL FIXO NO TOPO -->
+  <!-- PAINEL GERENCIAL — cards de resumo fixos, filtros/histórico recolhidos -->
   <div class="painel-section">
     <div class="painel-title">
       <i class="ti ti-chart-bar" style="font-size:18px;color:#0f6e56"></i>
@@ -180,37 +190,7 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
       <span id="painel-total-enc">0 encerrados</span>
     </div>
 
-    <!-- Filtros -->
-    <div class="painel-filtros">
-      <div class="filtro-group">
-        <label class="filtro-label"><i class="ti ti-user-circle"></i> Gestora</label>
-        <div class="filtro-btns" id="filtro-gestora">
-          <button class="filtro-btn active" data-val="todas" onclick="setFiltroGestora(this)">Todas</button>
-          <button class="filtro-btn" data-val="Larissa" onclick="setFiltroGestora(this)">Larissa</button>
-          <button class="filtro-btn" data-val="Geovana" onclick="setFiltroGestora(this)">Geovana</button>
-        </div>
-      </div>
-      <div class="filtro-group">
-        <label class="filtro-label"><i class="ti ti-calendar"></i> Mês</label>
-        <div class="filtro-btns" id="filtro-mes">
-          <button class="filtro-btn active" data-val="todos" onclick="setFiltroMes(this)">Todos</button>
-          <button class="filtro-btn" data-val="01" onclick="setFiltroMes(this)">Jan</button>
-          <button class="filtro-btn" data-val="02" onclick="setFiltroMes(this)">Fev</button>
-          <button class="filtro-btn" data-val="03" onclick="setFiltroMes(this)">Mar</button>
-          <button class="filtro-btn" data-val="04" onclick="setFiltroMes(this)">Abr</button>
-          <button class="filtro-btn" data-val="05" onclick="setFiltroMes(this)">Mai</button>
-          <button class="filtro-btn" data-val="06" onclick="setFiltroMes(this)">Jun</button>
-          <button class="filtro-btn" data-val="07" onclick="setFiltroMes(this)">Jul</button>
-          <button class="filtro-btn" data-val="08" onclick="setFiltroMes(this)">Ago</button>
-          <button class="filtro-btn" data-val="09" onclick="setFiltroMes(this)">Set</button>
-          <button class="filtro-btn" data-val="10" onclick="setFiltroMes(this)">Out</button>
-          <button class="filtro-btn" data-val="11" onclick="setFiltroMes(this)">Nov</button>
-          <button class="filtro-btn" data-val="12" onclick="setFiltroMes(this)">Dez</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Cards -->
+    <!-- Cards — sempre visíveis na tela inicial -->
     <div class="painel-grid">
       <div class="painel-card painel-card-destaque">
         <div class="painel-card-title">Total atendimentos</div>
@@ -236,25 +216,57 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
       </div>
     </div>
 
-    <!-- Tabela histórico -->
-    <div class="enc-list">
-      <div class="enc-list-title"><i class="ti ti-circle-check" style="color:#0f6e56"></i> Histórico de encerrados <span id="enc-count-label" style="font-size:11px;color:#aaa;font-weight:400"></span></div>
-      <div class="enc-table-wrap">
-        <table class="enc-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Líder</th>
-              <th>Demanda</th>
-              <th>Respondido por</th>
-              <th>Urgência</th>
-            </tr>
-          </thead>
-          <tbody id="enc-tbody"></tbody>
-        </table>
-        <div id="enc-empty" style="text-align:center;padding:1.5rem;color:#aaa;font-size:13px;display:none">
-          <i class="ti ti-inbox" style="font-size:22px;display:block;margin-bottom:6px"></i>
-          Nenhum atendimento encerrado encontrado.
+    <!-- Botão para abrir filtros + histórico -->
+    <div style="margin-bottom:1.25rem">
+      <button class="painel-toggle" id="painel-toggle-btn" onclick="togglePainel()">
+        <span id="painel-toggle-label">Ver filtros e histórico</span> <i class="ti ti-chevron-down"></i>
+      </button>
+    </div>
+
+    <div class="painel-body" id="painel-body">
+      <!-- Filtros -->
+      <div class="painel-filtros">
+        <div class="filtro-group">
+          <label class="filtro-label"><i class="ti ti-user-circle"></i> Gestora</label>
+          <div class="filtro-btns" id="filtro-gestora">
+            <button class="filtro-btn active" data-val="todas" onclick="setFiltroGestora(this)">Todas</button>
+            <button class="filtro-btn" data-val="Larissa" onclick="setFiltroGestora(this)">Larissa</button>
+            <button class="filtro-btn" data-val="Geovana" onclick="setFiltroGestora(this)">Geovana</button>
+          </div>
+        </div>
+        <div class="filtro-group">
+          <label class="filtro-label"><i class="ti ti-calendar-event"></i> Período</label>
+          <input type="date" id="f-periodo-de" class="mini-date" onchange="setFiltroPeriodo()">
+          <span style="font-size:11px;color:#888">até</span>
+          <input type="date" id="f-periodo-ate" class="mini-date" onchange="setFiltroPeriodo()">
+          <button class="filtro-btn" onclick="limparPeriodo()">Limpar</button>
+        </div>
+      </div>
+
+      <!-- Tabela histórico — só aparece quando algum filtro está aplicado -->
+      <div class="enc-list">
+        <div class="enc-list-title"><i class="ti ti-circle-check" style="color:#0f6e56"></i> Histórico de encerrados <span id="enc-count-label" style="font-size:11px;color:#aaa;font-weight:400"></span></div>
+        <div id="enc-sem-filtro" style="text-align:center;padding:1.5rem;color:#aaa;font-size:13px">
+          <i class="ti ti-filter" style="font-size:22px;display:block;margin-bottom:6px"></i>
+          Selecione um filtro acima (gestora ou período) para ver o histórico de encerrados.
+        </div>
+        <div class="enc-table-wrap" id="enc-table-wrap" style="display:none">
+          <table class="enc-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Líder</th>
+                <th>Demanda</th>
+                <th>Respondido por</th>
+                <th>Urgência</th>
+              </tr>
+            </thead>
+            <tbody id="enc-tbody"></tbody>
+          </table>
+          <div id="enc-empty" style="text-align:center;padding:1.5rem;color:#aaa;font-size:13px;display:none">
+            <i class="ti ti-inbox" style="font-size:22px;display:block;margin-bottom:6px"></i>
+            Nenhum atendimento encerrado encontrado.
+          </div>
         </div>
       </div>
     </div>
@@ -262,19 +274,12 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
 
   <div style="border-top:2px dashed #ddd;margin:1.5rem 0"></div>
 
-  <div class="stats">
-    <div class="stat"><div class="stat-label">Total</div><div class="stat-val" id="s-total">0</div></div>
-    <div class="stat"><div class="stat-label">Pendentes</div><div class="stat-val" id="s-pendente">0</div></div>
-    <div class="stat"><div class="stat-label">Em andamento</div><div class="stat-val" id="s-andamento">0</div></div>
-    <div class="stat"><div class="stat-label">Alta urgência</div><div class="stat-val urg" id="s-alta">0</div></div>
-  </div>
-
   <div class="toolbar">
-    <input type="text" id="search-input" placeholder="Buscar por líder, demanda..." oninput="renderTable()">
+    <input type="text" id="search-input" placeholder="Buscar por líder, demanda..." oninput="tabelaLimite=15;renderTable()">
     <div class="filtro-btns" id="filtro-status-tabela">
-      <button class="filtro-btn-tab active" data-val="todos" onclick="setFiltroStatusTabela(this)"><i class="ti ti-list"></i> Todos</button>
-      <button class="filtro-btn-tab" data-val="abertos" onclick="setFiltroStatusTabela(this)"><i class="ti ti-clock"></i> Em aberto</button>
+      <button class="filtro-btn-tab active" data-val="abertos" onclick="setFiltroStatusTabela(this)"><i class="ti ti-clock"></i> Em aberto</button>
       <button class="filtro-btn-tab" data-val="Encerrado" onclick="setFiltroStatusTabela(this)"><i class="ti ti-circle-check"></i> Encerrados</button>
+      <button class="filtro-btn-tab" data-val="todos" onclick="setFiltroStatusTabela(this)"><i class="ti ti-list"></i> Todos</button>
     </div>
     <button class="btn-add" onclick="openModal()"><i class="ti ti-plus"></i> Novo atendimento</button>
     <div class="sync-badge"><span class="dot-offline" id="dot-status"></span> <span id="sync-label">Conectando...</span></div>
@@ -303,6 +308,9 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
       <i class="ti ti-inbox" style="font-size:28px;display:block;margin-bottom:8px"></i>
       Nenhum atendimento registrado. Clique em "Novo atendimento" para começar.
     </div>
+  </div>
+  <div class="load-more-wrap" id="load-more-wrap" style="display:none">
+    <button class="btn-load-more" id="btn-load-more" onclick="carregarMais()"></button>
   </div>
 </div>
 
@@ -601,13 +609,23 @@ function renderTable(){
     return matchQ && matchStatus;
   });
 
+  const visiveis = filtered.slice(0, tabelaLimite);
+  const loadMoreWrap = document.getElementById('load-more-wrap');
+  const restantes = filtered.length - visiveis.length;
+  if(restantes > 0){
+    loadMoreWrap.style.display = 'block';
+    document.getElementById('btn-load-more').textContent = `Carregar mais (${restantes} restantes)`;
+  } else {
+    loadMoreWrap.style.display = 'none';
+  }
+
   const tbody = document.getElementById('tbody');
   if(!filtered.length){
     tbody.innerHTML='';
     document.getElementById('empty-msg').style.display='block';
   } else {
     document.getElementById('empty-msg').style.display='none';
-    tbody.innerHTML = filtered.map((r,i)=>`
+    tbody.innerHTML = visiveis.map((r,i)=>`
       <tr id="row-${r.id}" class="${r._novo?'novo-highlight':''}">
         <td style="color:#999;font-size:11px">${i+1}</td>
         <td>
@@ -638,23 +656,36 @@ function renderTable(){
       </tr>`).join('');
   }
 
-  document.getElementById('s-total').textContent = list.length;
-  document.getElementById('s-pendente').textContent = list.filter(r=>r.status==='Pendente').length;
-  document.getElementById('s-andamento').textContent = list.filter(r=>r.status==='Em andamento').length;
-  document.getElementById('s-alta').textContent = list.filter(r=>r.urgencia==='Alta').length;
   renderPainel();
 }
 
 // Filtros do painel
 let filtroGestora = 'todas';
-let filtroMes = 'todos';
-let filtroStatusTabela = 'todos';
+let filtroStatusTabela = 'abertos';
+let tabelaLimite = 15;
 
 function setFiltroStatusTabela(el){
   filtroStatusTabela = el.dataset.val;
+  tabelaLimite = 15;
   document.querySelectorAll('#filtro-status-tabela .filtro-btn-tab').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
   renderTable();
+}
+
+function carregarMais(){
+  tabelaLimite += 15;
+  renderTable();
+}
+
+function togglePainel(){
+  const body = document.getElementById('painel-body');
+  const btn = document.getElementById('painel-toggle-btn');
+  const label = document.getElementById('painel-toggle-label');
+  const abrir = !body.classList.contains('open');
+  body.classList.toggle('open', abrir);
+  btn.classList.toggle('open', abrir);
+  label.textContent = abrir ? 'Ocultar filtros e histórico' : 'Ver filtros e histórico';
+  localStorage.setItem('painel_open', abrir ? '1' : '0');
 }
 
 function setFiltroGestora(el){
@@ -663,29 +694,54 @@ function setFiltroGestora(el){
   el.classList.add('active');
   renderPainel();
 }
-function setFiltroMes(el){
-  filtroMes = el.dataset.val;
-  document.querySelectorAll('#filtro-mes .filtro-btn').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
+// Filtro de período (data de/até)
+let filtroDataDe = '';
+let filtroDataAte = '';
+
+function setFiltroPeriodo(){
+  filtroDataDe = document.getElementById('f-periodo-de').value;
+  filtroDataAte = document.getElementById('f-periodo-ate').value;
   renderPainel();
+}
+
+function limparPeriodo(){
+  filtroDataDe = '';
+  filtroDataAte = '';
+  document.getElementById('f-periodo-de').value = '';
+  document.getElementById('f-periodo-ate').value = '';
+  renderPainel();
+}
+
+// Data de referência do registro: prioriza data de retorno da gestão, senão usa a data de criação
+function dataRefRecord(r){
+  if(r.dataRetorno) return r.dataRetorno;
+  if(r.criadoEm) return new Date(r.criadoEm).toISOString().slice(0,10);
+  return '';
+}
+
+// Aplica filtro de período (de/até) — usado por todos os cards
+function matchPeriodo(r){
+  const ref = dataRefRecord(r);
+  if(filtroDataDe && (!ref || ref < filtroDataDe)) return false;
+  if(filtroDataAte && (!ref || ref > filtroDataAte)) return false;
+  return true;
+}
+
+// Unifica nomes escritos de formas diferentes (ex: "LAUANNY", "lauanny ", "Lauanny" viram um só)
+function normalizarNome(n){
+  if(!n) return '';
+  return n.trim().replace(/\s+/g,' ').toLowerCase().replace(/(^|\s)\S/g, c=>c.toUpperCase());
 }
 
 function renderPainel(){
   const list = Object.values(records);
   const todosEncerrados = list.filter(r => r.status === 'Encerrado');
 
-  // Aplicar filtros
-  let encerrados = todosEncerrados.filter(r => {
-    const okGestora = filtroGestora === 'todas' || r.gestoraResp === filtroGestora;
-    let okMes = true;
-    if(filtroMes !== 'todos'){
-      const dataRef = r.dataRetorno || '';
-      if(dataRef) okMes = dataRef.split('-')[1] === filtroMes;
-      else if(r.criadoEm) okMes = new Date(r.criadoEm).getMonth()+1 === parseInt(filtroMes);
-      else okMes = false;
-    }
-    return okGestora && okMes;
-  });
+  // Encerrados dentro do período selecionado (mês/data), sem aplicar o filtro de gestora ainda
+  const encerradosPeriodo = todosEncerrados.filter(matchPeriodo);
+
+  // Encerrados dentro do período E da gestora selecionada — usado nos demais cards (urgência, top líderes, histórico)
+  const encerrados = encerradosPeriodo.filter(r => filtroGestora === 'todas' || r.gestoraResp === filtroGestora);
 
   const total = encerrados.length;
   const totalGeral = list.length;
@@ -699,16 +755,16 @@ function renderPainel(){
   document.getElementById('pc-total').textContent = total;
   document.getElementById('pc-enc-sub').innerHTML = 'Taxa de conclusão: <strong>' + pct + '%</strong>';
 
-  // Por gestora
+  // Por gestora — sempre compara Larissa x Geovana no período selecionado, independente do filtro de gestora
   const gestoras = ['Larissa','Geovana'];
-  const maxG = Math.max(...gestoras.map(g => encerrados.filter(r=>r.gestoraResp===g).length), 1);
+  const maxG = Math.max(...gestoras.map(g => encerradosPeriodo.filter(r=>r.gestoraResp===g).length), 1);
   document.getElementById('painel-gestora').innerHTML = gestoras.map(g => {
-    const qtd = encerrados.filter(r=>r.gestoraResp===g).length;
+    const qtd = encerradosPeriodo.filter(r=>r.gestoraResp===g).length;
     return `
     <div class="painel-row"><span class="painel-row-label"><span style="width:10px;height:10px;border-radius:50%;background:#f0eafa;border:2px solid #5b21b6;display:inline-block"></span>${g}</span><span class="painel-row-val" style="color:#5b21b6">${qtd}</span></div>
     <div class="painel-bar-wrap"><div class="painel-bar" style="width:${Math.round((qtd/maxG)*100)}%;background:#5b21b6"></div></div>`;
   }).join('') + (() => {
-    const sem = encerrados.filter(r=>!r.gestoraResp).length;
+    const sem = encerradosPeriodo.filter(r=>!r.gestoraResp).length;
     return sem > 0 ? `<div style="font-size:11px;color:#aaa;margin-top:4px">Sem registro: ${sem}</div>` : '';
   })();
 
@@ -722,9 +778,14 @@ function renderPainel(){
     <div class="painel-bar-wrap"><div class="painel-bar" style="width:${Math.round((qtd/maxU)*100)}%;background:${u.c}"></div></div>`;
   }).join('');
 
-  // Top líderes
+  // Top líderes — nomes normalizados para unificar grafias diferentes (ex: "LAUANNY" e "Lauanny")
   const contLider = {};
-  encerrados.forEach(r=>{ if(r.lider) contLider[r.lider]=(contLider[r.lider]||0)+1; });
+  encerrados.forEach(r=>{
+    if(r.lider){
+      const chave = normalizarNome(r.lider);
+      contLider[chave] = (contLider[chave]||0)+1;
+    }
+  });
   const topLideres = Object.entries(contLider).sort((a,b)=>b[1]-a[1]).slice(0,5);
   const maxL = topLideres.length > 0 ? topLideres[0][1] : 1;
   document.getElementById('painel-lideres').innerHTML = topLideres.length > 0
@@ -733,24 +794,36 @@ function renderPainel(){
       <div class="painel-bar-wrap"><div class="painel-bar" style="width:${Math.round((qtd/maxL)*100)}%;background:#185fa5"></div></div>`).join('')
     : '<span style="font-size:12px;color:#aaa">Nenhum ainda</span>';
 
-  // Tabela histórico filtrado
+  // Tabela histórico — só é exibida quando algum filtro (gestora/mês/período) está aplicado
+  const filtroAtivo = filtroGestora !== 'todas' || !!filtroDataDe || !!filtroDataAte;
   const encTbody = document.getElementById('enc-tbody');
-  document.getElementById('enc-count-label').textContent = total > 0 ? `— ${total} registro${total!==1?'s':''}` : '';
-  if(!encerrados.length){
-    encTbody.innerHTML='';
-    document.getElementById('enc-empty').style.display='block';
+  const semFiltroEl = document.getElementById('enc-sem-filtro');
+  const tableWrapEl = document.getElementById('enc-table-wrap');
+
+  if(!filtroAtivo){
+    semFiltroEl.style.display = 'block';
+    tableWrapEl.style.display = 'none';
+    document.getElementById('enc-count-label').textContent = '';
   } else {
-    document.getElementById('enc-empty').style.display='none';
-    encTbody.innerHTML = encerrados
-      .sort((a,b)=>(b.criadoEm||0)-(a.criadoEm||0))
-      .map((r,i)=>`
-      <tr>
-        <td style="color:#999;font-size:11px">${i+1}</td>
-        <td><div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="width:22px;height:22px;font-size:9px">${initials(r.lider)}</div><span style="font-weight:500;white-space:nowrap">${r.lider||'—'}</span></div></td>
-        <td style="max-width:160px">${r.demanda||'—'}</td>
-        <td>${r.gestoraResp?`<span style="background:#f0eafa;color:#5b21b6;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600">${r.gestoraResp}</span>`:'—'}</td>
-        <td><span class="badge ${urgClass(r.urgencia)}">${r.urgencia||'—'}</span></td>
-      </tr>`).join('');
+    semFiltroEl.style.display = 'none';
+    tableWrapEl.style.display = 'block';
+    document.getElementById('enc-count-label').textContent = total > 0 ? `— ${total} registro${total!==1?'s':''}` : '';
+    if(!encerrados.length){
+      encTbody.innerHTML='';
+      document.getElementById('enc-empty').style.display='block';
+    } else {
+      document.getElementById('enc-empty').style.display='none';
+      encTbody.innerHTML = encerrados
+        .sort((a,b)=>(b.criadoEm||0)-(a.criadoEm||0))
+        .map((r,i)=>`
+        <tr>
+          <td style="color:#999;font-size:11px">${i+1}</td>
+          <td><div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="width:22px;height:22px;font-size:9px">${initials(r.lider)}</div><span style="font-weight:500;white-space:nowrap">${r.lider||'—'}</span></div></td>
+          <td style="max-width:160px">${r.demanda||'—'}</td>
+          <td>${r.gestoraResp?`<span style="background:#f0eafa;color:#5b21b6;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600">${r.gestoraResp}</span>`:'—'}</td>
+          <td><span class="badge ${urgClass(r.urgencia)}">${r.urgencia||'—'}</span></td>
+        </tr>`).join('');
+    }
   }
 }
 
@@ -786,7 +859,7 @@ function closeModal(){ document.getElementById('modal').classList.remove('open')
 
 function saveRecord(){
   const rec = {
-    lider: document.getElementById('f-lider').value.trim(),
+    lider: normalizarNome(document.getElementById('f-lider').value),
     direcionar: document.getElementById('f-direcionar').value,
     demanda: document.getElementById('f-demanda').value.trim(),
     sugestao: document.getElementById('f-sugestao').value.trim(),
@@ -831,6 +904,12 @@ function updateClock(){
 updateClock();
 setInterval(updateClock, 1000);
 verificarPermissaoPush();
+
+if(localStorage.getItem('painel_open') === '1'){
+  document.getElementById('painel-body').classList.add('open');
+  document.getElementById('painel-toggle-btn').classList.add('open');
+  document.getElementById('painel-toggle-label').textContent = 'Ocultar filtros e histórico';
+}
 </script>
 </body>
 </html>
