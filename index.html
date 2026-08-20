@@ -206,7 +206,7 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
         <div style="font-size:12px;color:#aaa;margin-top:6px" id="pc-enc-sub"></div>
       </div>
       <div class="painel-card">
-        <div class="painel-card-title">Por gestora</div>
+        <div class="painel-card-title">Por responsável</div>
         <div class="painel-card-body" id="painel-gestora"></div>
       </div>
       <div class="painel-card">
@@ -230,11 +230,12 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
       <!-- Filtros -->
       <div class="painel-filtros">
         <div class="filtro-group">
-          <label class="filtro-label"><i class="ti ti-user-circle"></i> Gestora</label>
+          <label class="filtro-label"><i class="ti ti-user-circle"></i> Responsável</label>
           <div class="filtro-btns" id="filtro-gestora">
             <button class="filtro-btn active" data-val="todas" onclick="setFiltroGestora(this)">Todas</button>
             <button class="filtro-btn" data-val="Larissa" onclick="setFiltroGestora(this)">Larissa</button>
             <button class="filtro-btn" data-val="Geovana" onclick="setFiltroGestora(this)">Geovana</button>
+            <button class="filtro-btn" data-val="SAC" onclick="setFiltroGestora(this)"><i class="ti ti-headset"></i> SAC</button>
           </div>
         </div>
         <div class="filtro-group">
@@ -251,7 +252,7 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
         <div class="enc-list-title"><i class="ti ti-circle-check" style="color:#0f6e56"></i> Histórico de encerrados <span id="enc-count-label" style="font-size:11px;color:#aaa;font-weight:400"></span></div>
         <div id="enc-sem-filtro" style="text-align:center;padding:1.5rem;color:#aaa;font-size:13px">
           <i class="ti ti-filter" style="font-size:22px;display:block;margin-bottom:6px"></i>
-          Selecione um filtro acima (gestora ou período) para ver o histórico de encerrados.
+          Selecione um filtro acima (responsável ou período) para ver o histórico de encerrados.
         </div>
         <div class="enc-table-wrap" id="enc-table-wrap" style="display:none">
           <table class="enc-table">
@@ -283,6 +284,7 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
       <button class="filtro-btn-dir active" data-val="todas" onclick="setFiltroDirecionadoTabela(this)"><i class="ti ti-user-circle"></i> Todas</button>
       <button class="filtro-btn-dir" data-val="Larissa" onclick="setFiltroDirecionadoTabela(this)">Larissa</button>
       <button class="filtro-btn-dir" data-val="Geovana" onclick="setFiltroDirecionadoTabela(this)">Geovana</button>
+      <button class="filtro-btn-dir" data-val="SAC" onclick="setFiltroDirecionadoTabela(this)"><i class="ti ti-headset"></i> SAC</button>
       <button class="filtro-btn-dir" data-val="sem" onclick="setFiltroDirecionadoTabela(this)"><i class="ti ti-user-off"></i> Sem direcionamento</button>
     </div>
     <div class="filtro-btns" id="filtro-status-tabela">
@@ -300,14 +302,14 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
         <tr>
           <th>#</th>
           <th>Líder solicitante</th>
+          <th>Aberto em</th>
           <th>Direcionado para</th>
           <th>Demanda solicitada</th>
           <th>Entendimento Solicitante / Base Legal</th>
           <th>Orientação gestão</th>
           <th>Respondido por</th>
-          <th>Retorno gestão</th>
+          <th>Retorno atendimento</th>
           <th>Urgência / Status</th>
-          <th>Prazo retorno gestão</th>
           <th></th>
         </tr>
       </thead>
@@ -366,13 +368,22 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
         <input type="text" id="f-lider" placeholder="Nome do líder...">
       </div>
       <div class="form-row">
-        <label>Direcionar para</label>
-        <select id="f-direcionar">
-          <option value="">Selecione a gestora...</option>
+        <label>Data de abertura da solicitação</label>
+        <input type="date" id="f-data-abertura">
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Direcionar para</label>
+      <select id="f-direcionar">
+        <option value="">Selecione o direcionamento...</option>
+        <optgroup label="Gestoras">
           <option value="Larissa">Larissa</option>
           <option value="Geovana">Geovana</option>
-        </select>
-      </div>
+        </optgroup>
+        <optgroup label="Departamentos">
+          <option value="SAC">SAC</option>
+        </optgroup>
+      </select>
     </div>
     <div class="form-row">
       <label>Demanda solicitada</label>
@@ -388,16 +399,21 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
     </div>
     <div class="form-grid">
       <div class="form-row">
-        <label>Gestora que respondeu</label>
+        <label>Quem respondeu</label>
         <select id="f-gestora-resp">
           <option value="">Selecione...</option>
-          <option value="Larissa">Larissa</option>
-          <option value="Geovana">Geovana</option>
+          <optgroup label="Gestoras">
+            <option value="Larissa">Larissa</option>
+            <option value="Geovana">Geovana</option>
+          </optgroup>
+          <optgroup label="Departamentos">
+            <option value="SAC">SAC</option>
+          </optgroup>
         </select>
       </div>
       <div class="form-row">
-        <label>Data de retorno da gestão</label>
-        <input type="date" id="f-data-retorno">
+        <label>Data retorno atendimento <span style="font-weight:400;color:#888;font-size:11px">(gestão ou SAC)</span></label>
+        <input type="date" id="f-retorno-atend">
       </div>
     </div>
     <div class="form-grid">
@@ -417,10 +433,6 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
           <option value="Encerrado">Encerrado</option>
         </select>
       </div>
-    </div>
-    <div class="form-row">
-      <label>Prazo retorno gestão</label>
-      <input type="date" id="f-prazo">
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
@@ -571,7 +583,7 @@ function fecharNotif(){
 let notifRespTimer = null;
 function mostrarNotifResposta(r){
   const banner = document.getElementById('notif-resp');
-  const dataFmt = r.dataRetorno ? ` — Retorno: ${formatDate(r.dataRetorno)}` : '';
+  const dataFmt = r.retornoAtend ? ` — Retorno: ${formatDate(r.retornoAtend)}` : '';
   const gestoraFmt = r.gestoraResp ? `<strong>${r.gestoraResp}</strong>` : 'A gestão';
   document.getElementById('notif-resp-text').innerHTML =
     `${gestoraFmt} respondeu o chamado de <strong>${r.lider||'Líder'}</strong>${dataFmt}.<br>
@@ -602,6 +614,12 @@ function atualizarBadge(){
 function urgClass(u){ return u==='Alta'?'b-alta':u==='Média'?'b-media':'b-baixa'; }
 function statusClass(s){ return s==='Encerrado'?'b-encerrado':s==='Em andamento'?'b-andamento':'b-pendente'; }
 function formatDate(d){ if(!d) return '—'; const [y,m,day]=d.split('-'); return `${day}/${m}/${y}`; }
+// Data de abertura: usa a informada; se não houver (registros antigos), deriva da data de criação
+function aberturaDe(r){
+  if(r.dataAbertura) return r.dataAbertura;
+  if(r.criadoEm) return new Date(r.criadoEm).toISOString().slice(0,10);
+  return '';
+}
 function initials(n){ if(!n) return '?'; return n.trim().split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
 
 function renderTable(){
@@ -648,21 +666,27 @@ function renderTable(){
             <span style="font-weight:500;white-space:nowrap">${r.lider||'—'}</span>
           </div>
         </td>
+        <td style="font-size:12px;white-space:nowrap">${formatDate(aberturaDe(r))}</td>
         <td>
-          ${r.direcionar ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#f0eafa;color:#5b21b6;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap"><i class="ti ti-user-circle" style="font-size:13px"></i>${r.direcionar}</span>` : '—'}
+          ${r.direcionar ? (r.direcionar==='SAC'
+              ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#e1f0f5;color:#0e6a86;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap"><i class="ti ti-headset" style="font-size:13px"></i>${r.direcionar}</span>`
+              : `<span style="display:inline-flex;align-items:center;gap:5px;background:#f0eafa;color:#5b21b6;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap"><i class="ti ti-user-circle" style="font-size:13px"></i>${r.direcionar}</span>`)
+            : '—'}
         </td>
         <td>${r.demanda||'—'}</td>
         <td>${r.sugestao||'—'}</td>
         <td style="max-width:180px">${r.orientacao || '<span style="color:#ccc">—</span>'}</td>
         <td>
-          ${r.gestoraResp ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#f0eafa;color:#5b21b6;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap"><i class="ti ti-user-check" style="font-size:13px"></i>${r.gestoraResp}</span>` : '<span style="color:#ccc">—</span>'}
+          ${r.gestoraResp ? (r.gestoraResp==='SAC'
+              ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#e1f0f5;color:#0e6a86;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap"><i class="ti ti-headset" style="font-size:13px"></i>${r.gestoraResp}</span>`
+              : `<span style="display:inline-flex;align-items:center;gap:5px;background:#f0eafa;color:#5b21b6;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap"><i class="ti ti-user-check" style="font-size:13px"></i>${r.gestoraResp}</span>`)
+            : '<span style="color:#ccc">—</span>'}
         </td>
-        <td style="font-size:12px;white-space:nowrap">${r.dataRetorno ? formatDate(r.dataRetorno) : '<span style="color:#ccc">—</span>'}</td>
+        <td style="font-size:12px;white-space:nowrap">${r.retornoAtend ? formatDate(r.retornoAtend) : '<span style="color:#ccc">—</span>'}</td>
         <td>
           <span class="badge ${urgClass(r.urgencia)}">${r.urgencia}</span>
           <div style="margin-top:4px"><span class="badge ${statusClass(r.status)}">${r.status}</span></div>
         </td>
-        <td>${formatDate(r.prazo)}</td>
         <td style="white-space:nowrap">
           <button class="btn-icon btn-edit" onclick="editRecord('${r.id}')" title="Editar"><i class="ti ti-edit"></i></button>
           <button class="btn-icon" onclick="deleteRecord('${r.id}')" title="Excluir"><i class="ti ti-trash"></i></button>
@@ -735,9 +759,10 @@ function limparPeriodo(){
   renderPainel();
 }
 
-// Data de referência do registro: prioriza data de retorno da gestão, senão usa a data de criação
+// Data de referência do registro: prioriza o prazo de retorno da gestão (dia que respondeu), senão a data de criação
 function dataRefRecord(r){
-  if(r.dataRetorno) return r.dataRetorno;
+  if(r.retornoAtend) return r.retornoAtend;
+  if(r.prazo) return r.prazo;
   if(r.criadoEm) return new Date(r.criadoEm).toISOString().slice(0,10);
   return '';
 }
@@ -778,14 +803,18 @@ function renderPainel(){
   document.getElementById('pc-total').textContent = total;
   document.getElementById('pc-enc-sub').innerHTML = 'Taxa de conclusão: <strong>' + pct + '%</strong>';
 
-  // Por gestora — sempre compara Larissa x Geovana no período selecionado, independente do filtro de gestora
-  const gestoras = ['Larissa','Geovana'];
-  const maxG = Math.max(...gestoras.map(g => encerradosPeriodo.filter(r=>r.gestoraResp===g).length), 1);
-  document.getElementById('painel-gestora').innerHTML = gestoras.map(g => {
-    const qtd = encerradosPeriodo.filter(r=>r.gestoraResp===g).length;
+  // Por responsável — compara Larissa x Geovana x SAC no período selecionado, independente do filtro
+  const responsaveis = [
+    {n:'Larissa', c:'#5b21b6', bg:'#f0eafa'},
+    {n:'Geovana', c:'#5b21b6', bg:'#f0eafa'},
+    {n:'SAC',     c:'#0e6a86', bg:'#e1f0f5'}
+  ];
+  const maxG = Math.max(...responsaveis.map(g => encerradosPeriodo.filter(r=>r.gestoraResp===g.n).length), 1);
+  document.getElementById('painel-gestora').innerHTML = responsaveis.map(g => {
+    const qtd = encerradosPeriodo.filter(r=>r.gestoraResp===g.n).length;
     return `
-    <div class="painel-row"><span class="painel-row-label"><span style="width:10px;height:10px;border-radius:50%;background:#f0eafa;border:2px solid #5b21b6;display:inline-block"></span>${g}</span><span class="painel-row-val" style="color:#5b21b6">${qtd}</span></div>
-    <div class="painel-bar-wrap"><div class="painel-bar" style="width:${Math.round((qtd/maxG)*100)}%;background:#5b21b6"></div></div>`;
+    <div class="painel-row"><span class="painel-row-label"><span style="width:10px;height:10px;border-radius:50%;background:${g.bg};border:2px solid ${g.c};display:inline-block"></span>${g.n}</span><span class="painel-row-val" style="color:${g.c}">${qtd}</span></div>
+    <div class="painel-bar-wrap"><div class="painel-bar" style="width:${Math.round((qtd/maxG)*100)}%;background:${g.c}"></div></div>`;
   }).join('') + (() => {
     const sem = encerradosPeriodo.filter(r=>!r.gestoraResp).length;
     return sem > 0 ? `<div style="font-size:11px;color:#aaa;margin-top:4px">Sem registro: ${sem}</div>` : '';
@@ -843,7 +872,9 @@ function renderPainel(){
           <td style="color:#999;font-size:11px">${i+1}</td>
           <td><div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="width:22px;height:22px;font-size:9px">${initials(r.lider)}</div><span style="font-weight:500;white-space:nowrap">${r.lider||'—'}</span></div></td>
           <td style="max-width:160px">${r.demanda||'—'}</td>
-          <td>${r.gestoraResp?`<span style="background:#f0eafa;color:#5b21b6;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600">${r.gestoraResp}</span>`:'—'}</td>
+          <td>${r.gestoraResp?(r.gestoraResp==='SAC'
+              ?`<span style="display:inline-flex;align-items:center;gap:4px;background:#e1f0f5;color:#0e6a86;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600"><i class="ti ti-headset" style="font-size:12px"></i>${r.gestoraResp}</span>`
+              :`<span style="background:#f0eafa;color:#5b21b6;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600">${r.gestoraResp}</span>`):'—'}</td>
           <td><span class="badge ${urgClass(r.urgencia)}">${r.urgencia||'—'}</span></td>
         </tr>`).join('');
     }
@@ -856,24 +887,24 @@ function openModal(id){
     const r = records[id];
     document.getElementById('modal-title').textContent = 'Editar atendimento';
     document.getElementById('f-lider').value = r.lider||'';
+    document.getElementById('f-data-abertura').value = aberturaDe(r);
     document.getElementById('f-direcionar').value = r.direcionar||'';
     document.getElementById('f-demanda').value = r.demanda||'';
     document.getElementById('f-sugestao').value = r.sugestao||'';
     document.getElementById('f-orientacao').value = r.orientacao||'';
     document.getElementById('f-gestora-resp').value = r.gestoraResp||'';
-    document.getElementById('f-data-retorno').value = r.dataRetorno||'';
+    document.getElementById('f-retorno-atend').value = r.retornoAtend||'';
     document.getElementById('f-urgencia').value = r.urgencia||'Média';
     document.getElementById('f-status').value = r.status||'Pendente';
-    document.getElementById('f-prazo').value = r.prazo||'';
   } else {
     document.getElementById('modal-title').textContent = 'Novo atendimento';
     ['f-lider','f-demanda','f-sugestao','f-orientacao'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('f-data-abertura').value = new Date().toISOString().slice(0,10);
     document.getElementById('f-direcionar').value = '';
     document.getElementById('f-gestora-resp').value = '';
-    document.getElementById('f-data-retorno').value = '';
+    document.getElementById('f-retorno-atend').value = '';
     document.getElementById('f-urgencia').value = 'Média';
     document.getElementById('f-status').value = 'Pendente';
-    document.getElementById('f-prazo').value = '';
   }
   document.getElementById('modal').classList.add('open');
 }
@@ -883,15 +914,15 @@ function closeModal(){ document.getElementById('modal').classList.remove('open')
 function saveRecord(){
   const rec = {
     lider: normalizarNome(document.getElementById('f-lider').value),
+    dataAbertura: document.getElementById('f-data-abertura').value,
     direcionar: document.getElementById('f-direcionar').value,
     demanda: document.getElementById('f-demanda').value.trim(),
     sugestao: document.getElementById('f-sugestao').value.trim(),
     orientacao: document.getElementById('f-orientacao').value.trim(),
     gestoraResp: document.getElementById('f-gestora-resp').value,
-    dataRetorno: document.getElementById('f-data-retorno').value,
+    retornoAtend: document.getElementById('f-retorno-atend').value,
     urgencia: document.getElementById('f-urgencia').value,
     status: document.getElementById('f-status').value,
-    prazo: document.getElementById('f-prazo').value,
     criadoEm: editingId ? (records[editingId]?.criadoEm || Date.now()) : Date.now()
   };
   if(editingId){ refAtendimentos.child(editingId).update(rec); showToast('Atendimento atualizado!'); }
