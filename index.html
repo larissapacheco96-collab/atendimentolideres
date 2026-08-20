@@ -168,6 +168,24 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
 .notif-resp-icon{width:36px;height:36px;border-radius:50%;background:#e6f1fb;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;color:#185fa5}
 .notif-resp-title{font-size:13px;font-weight:700;color:#185fa5;margin-bottom:3px;display:flex;align-items:center;gap:6px}
 .notif-resp-title .badge-resp{background:#185fa5;color:#fff;font-size:10px;padding:1px 7px;border-radius:20px;font-weight:600}
+/* Anexos */
+.anexo-wrap{margin-top:7px}
+.anexo-toolbar{display:flex;gap:6px;margin-bottom:7px}
+.anexo-btn{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;border:1px solid #d4d4ce;background:#f7f6f2;color:#3a3a37;cursor:pointer;font-family:inherit;transition:all .15s}
+.anexo-btn:hover{background:#eeedea;border-color:#aaa}
+.anexo-btn i{font-size:13px}
+.anexo-paste-hint{font-size:10px;color:#aaa;margin-top:2px}
+.anexo-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.anexo-item{position:relative;border:1px solid #e4e4df;border-radius:8px;overflow:hidden;background:#fafaf8}
+.anexo-img{width:90px;height:70px;object-fit:cover;display:block;cursor:pointer}
+.anexo-pdf{display:flex;flex-direction:column;align-items:center;justify-content:center;width:90px;height:70px;font-size:10px;color:#5b21b6;font-weight:600;gap:4px;cursor:pointer;text-decoration:none}
+.anexo-pdf i{font-size:22px}
+.anexo-del{position:absolute;top:2px;right:2px;width:17px;height:17px;border-radius:50%;background:rgba(0,0,0,.5);color:#fff;border:none;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;line-height:1;padding:0}
+.anexo-del:hover{background:rgba(180,0,0,.8)}
+/* Visualização de anexos no card da tabela */
+.view-anexo-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.view-anexo-img{width:60px;height:48px;object-fit:cover;border-radius:5px;border:1px solid #e4e4df;cursor:pointer}
+.view-anexo-pdf{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#5b21b6;font-weight:600;background:#f0eafa;padding:3px 8px;border-radius:5px;text-decoration:none}
 </style>
 </head>
 <body>
@@ -388,14 +406,41 @@ td{padding:9px 10px;vertical-align:top;color:#1a1a1a;word-break:break-word;font-
     <div class="form-row">
       <label>Demanda solicitada</label>
       <textarea id="f-demanda" rows="2" placeholder="Descreva a demanda..."></textarea>
+      <div class="anexo-wrap" id="wrap-demanda">
+        <div class="anexo-toolbar">
+          <button type="button" class="anexo-btn" onclick="triggerUpload('demanda')"><i class="ti ti-paperclip"></i> Anexar arquivo</button>
+          <button type="button" class="anexo-btn" onclick="pasteClipboard('demanda')"><i class="ti ti-clipboard"></i> Colar print</button>
+        </div>
+        <div class="anexo-paste-hint">Ou cole uma imagem diretamente com Ctrl+V enquanto este campo estiver selecionado.</div>
+        <input type="file" id="file-demanda" accept="image/*,.pdf,.doc,.docx" multiple style="display:none" onchange="handleFiles('demanda',this)">
+        <div class="anexo-list" id="list-demanda"></div>
+      </div>
     </div>
     <div class="form-row">
       <label>Entendimento / Sugestão — informar base legal</label>
       <textarea id="f-sugestao" rows="3" placeholder="Ex: Conforme art. 7º da CLT..."></textarea>
+      <div class="anexo-wrap" id="wrap-sugestao">
+        <div class="anexo-toolbar">
+          <button type="button" class="anexo-btn" onclick="triggerUpload('sugestao')"><i class="ti ti-paperclip"></i> Anexar arquivo</button>
+          <button type="button" class="anexo-btn" onclick="pasteClipboard('sugestao')"><i class="ti ti-clipboard"></i> Colar print</button>
+        </div>
+        <div class="anexo-paste-hint">Ou cole uma imagem diretamente com Ctrl+V enquanto este campo estiver selecionado.</div>
+        <input type="file" id="file-sugestao" accept="image/*,.pdf,.doc,.docx" multiple style="display:none" onchange="handleFiles('sugestao',this)">
+        <div class="anexo-list" id="list-sugestao"></div>
+      </div>
     </div>
     <div class="form-row">
       <label>Orientação gestão</label>
       <textarea id="f-orientacao" rows="2" placeholder="Orientação para a liderança..."></textarea>
+      <div class="anexo-wrap" id="wrap-orientacao">
+        <div class="anexo-toolbar">
+          <button type="button" class="anexo-btn" onclick="triggerUpload('orientacao')"><i class="ti ti-paperclip"></i> Anexar arquivo</button>
+          <button type="button" class="anexo-btn" onclick="pasteClipboard('orientacao')"><i class="ti ti-clipboard"></i> Colar print</button>
+        </div>
+        <div class="anexo-paste-hint">Ou cole uma imagem diretamente com Ctrl+V enquanto este campo estiver selecionado.</div>
+        <input type="file" id="file-orientacao" accept="image/*,.pdf,.doc,.docx" multiple style="display:none" onchange="handleFiles('orientacao',this)">
+        <div class="anexo-list" id="list-orientacao"></div>
+      </div>
     </div>
     <div class="form-grid">
       <div class="form-row">
@@ -673,9 +718,9 @@ function renderTable(){
               : `<span style="display:inline-flex;align-items:center;gap:5px;background:#f0eafa;color:#5b21b6;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap"><i class="ti ti-user-circle" style="font-size:13px"></i>${r.direcionar}</span>`)
             : '—'}
         </td>
-        <td>${r.demanda||'—'}</td>
-        <td>${r.sugestao||'—'}</td>
-        <td style="max-width:180px">${r.orientacao || '<span style="color:#ccc">—</span>'}</td>
+        <td>${r.demanda||'—'}${renderAnexosView(r.anexosDemanda)}</td>
+        <td>${r.sugestao||'—'}${renderAnexosView(r.anexosSugestao)}</td>
+        <td style="max-width:180px">${r.orientacao || '<span style="color:#ccc">—</span>'}${renderAnexosView(r.anexosOrientacao)}</td>
         <td>
           ${r.gestoraResp ? (r.gestoraResp==='SAC'
               ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#e1f0f5;color:#0e6a86;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap"><i class="ti ti-headset" style="font-size:13px"></i>${r.gestoraResp}</span>`
@@ -892,6 +937,10 @@ function openModal(id){
     document.getElementById('f-demanda').value = r.demanda||'';
     document.getElementById('f-sugestao').value = r.sugestao||'';
     document.getElementById('f-orientacao').value = r.orientacao||'';
+    anexos.demanda = (r.anexosDemanda||[]).map(a=>({...a}));
+    anexos.sugestao = (r.anexosSugestao||[]).map(a=>({...a}));
+    anexos.orientacao = (r.anexosOrientacao||[]).map(a=>({...a}));
+    CAMPOS_ANEXO.forEach(c=>renderAnexos(c));
     document.getElementById('f-gestora-resp').value = r.gestoraResp||'';
     document.getElementById('f-retorno-atend').value = r.retornoAtend||'';
     document.getElementById('f-urgencia').value = r.urgencia||'Média';
@@ -909,7 +958,130 @@ function openModal(id){
   document.getElementById('modal').classList.add('open');
 }
 
-function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+// ── ANEXOS ──────────────────────────────────────────────────────────────────
+const CAMPOS_ANEXO = ['demanda','sugestao','orientacao'];
+let anexos = {demanda:[], sugestao:[], orientacao:[]};
+const MAX_B64 = 900*1024; // 900 KB limite por arquivo após compressão
+
+function resetAnexos(){ CAMPOS_ANEXO.forEach(c=>{anexos[c]=[];renderAnexos(c);}); }
+
+function triggerUpload(campo){ document.getElementById('file-'+campo).click(); }
+
+async function handleFiles(campo, input){
+  for(const file of Array.from(input.files)) await addFile(campo, file);
+  input.value='';
+}
+
+async function pasteClipboard(campo){
+  try{
+    const items = await navigator.clipboard.read();
+    let found=false;
+    for(const item of items){
+      const imgType = item.types.find(t=>t.startsWith('image/'));
+      if(imgType){ const blob=await item.getType(imgType); await addFile(campo, blob, 'print.png'); found=true; break; }
+    }
+    if(!found) showToast('Nenhuma imagem encontrada no clipboard. Copie uma imagem antes.');
+  } catch(e){ showToast('Use Ctrl+V com o campo de texto em foco, ou capture a tela primeiro.'); }
+}
+
+// Ctrl+V em qualquer textarea do modal captura imagem do clipboard
+document.addEventListener('paste', function(e){
+  const focused = document.activeElement;
+  const campo = CAMPOS_ANEXO.find(c=>document.getElementById('f-'+c)===focused||document.getElementById('wrap-'+c)?.contains(focused));
+  if(!campo) return;
+  const items = Array.from(e.clipboardData?.items||[]);
+  const imgItem = items.find(i=>i.type.startsWith('image/'));
+  if(!imgItem) return;
+  e.preventDefault();
+  const blob = imgItem.getAsFile();
+  addFile(campo, blob, 'print.png');
+});
+
+async function addFile(campo, file, forceName){
+  const name = forceName || file.name || 'arquivo';
+  const isPdf = file.type==='application/pdf';
+  const isImg = file.type.startsWith('image/');
+  const isDoc = file.type.includes('word') || name.match(/\.docx?$/i);
+  if(!isPdf && !isImg && !isDoc){ showToast('Formato não suportado. Use imagem, PDF ou Word.'); return; }
+  let b64;
+  if(isImg){
+    b64 = await compressImage(file);
+  } else {
+    b64 = await toBase64(file);
+  }
+  if(b64.length > MAX_B64){
+    showToast(`"${name}" é muito grande após compressão (${(b64.length/1024).toFixed(0)} KB). Reduza o arquivo.`);
+    return;
+  }
+  anexos[campo].push({name, type: file.type||'image/png', b64});
+  renderAnexos(campo);
+  showToast(`"${name}" anexado!`);
+}
+
+function toBase64(file){
+  return new Promise(res=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.readAsDataURL(file);});
+}
+
+function compressImage(file, maxW=1200, quality=0.75){
+  return new Promise(res=>{
+    const img=new Image();const url=URL.createObjectURL(file);
+    img.onload=()=>{
+      URL.revokeObjectURL(url);
+      const sc=Math.min(1,maxW/Math.max(img.width,img.height));
+      const canvas=document.createElement('canvas');
+      canvas.width=Math.round(img.width*sc);canvas.height=Math.round(img.height*sc);
+      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+      res(canvas.toDataURL('image/jpeg',quality));
+    };
+    img.src=url;
+  });
+}
+
+function removeAnexo(campo, i){ anexos[campo].splice(i,1); renderAnexos(campo); }
+
+function renderAnexos(campo){
+  const el=document.getElementById('list-'+campo); if(!el) return;
+  el.innerHTML = anexos[campo].map((a,i)=>{
+    const isImg = a.type.startsWith('image/');
+    const isPdf = a.type==='application/pdf';
+    const preview = isImg
+      ? `<img src="${a.b64}" class="anexo-img" onclick="viewAnexo('${campo}',${i})" title="${a.name}">`
+      : `<a class="anexo-pdf" href="${a.b64}" download="${a.name}" title="${a.name}">
+           <i class="ti ti-${isPdf?'file-type-pdf':'file-type-doc'}"></i>${a.name.substring(0,10)}${a.name.length>10?'…':''}
+         </a>`;
+    return `<div class="anexo-item">${preview}<button class="anexo-del" onclick="removeAnexo('${campo}',${i})" title="Remover">×</button></div>`;
+  }).join('');
+}
+
+function viewAnexo(campo, i){
+  const a = anexos[campo]?.[i]; if(!a) return;
+  const w=window.open(); w.document.write(`<img src="${a.b64}" style="max-width:100%;cursor:zoom-in" onclick="window.close()">`);
+}
+
+function viewAnexoFromRecord(b64, name, type){
+  const isImg = (type||'').startsWith('image/');
+  const w=window.open();
+  if(isImg) w.document.write(`<img src="${b64}" style="max-width:100%;cursor:zoom-in" onclick="window.close()">`);
+  else w.document.write(`<p>Baixando ${name}…</p><script>location.href='${b64}'<\/script>`);
+}
+
+// Renderiza anexos salvos numa linha da tabela
+function renderAnexosView(list){
+  if(!list||!list.length) return '';
+  return `<div class="view-anexo-list">${list.map((a,i)=>{
+    const isImg=(a.type||'').startsWith('image/');
+    return isImg
+      ? `<img src="${a.b64}" class="view-anexo-img" title="${a.name}" onclick="viewAnexoFromRecord('${a.b64}','${a.name}','${a.type}')">`
+      : `<a class="view-anexo-pdf" href="${a.b64}" download="${a.name}"><i class="ti ti-paperclip"></i>${a.name.substring(0,12)}${a.name.length>12?'…':''}</a>`;
+  }).join('')}</div>`;
+}
+
+// ── FIM ANEXOS ───────────────────────────────────────────────────────────────
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  resetAnexos();
+}
 
 function saveRecord(){
   const rec = {
@@ -923,7 +1095,10 @@ function saveRecord(){
     retornoAtend: document.getElementById('f-retorno-atend').value,
     urgencia: document.getElementById('f-urgencia').value,
     status: document.getElementById('f-status').value,
-    criadoEm: editingId ? (records[editingId]?.criadoEm || Date.now()) : Date.now()
+    criadoEm: editingId ? (records[editingId]?.criadoEm || Date.now()) : Date.now(),
+    anexosDemanda: anexos.demanda,
+    anexosSugestao: anexos.sugestao,
+    anexosOrientacao: anexos.orientacao
   };
   if(editingId){ refAtendimentos.child(editingId).update(rec); showToast('Atendimento atualizado!'); }
   else { refAtendimentos.push(rec); showToast('Atendimento salvo!'); }
